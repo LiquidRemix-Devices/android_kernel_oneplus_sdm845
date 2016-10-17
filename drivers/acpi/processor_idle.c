@@ -1375,7 +1375,7 @@ int acpi_processor_power_state_has_changed(struct acpi_processor *pr)
 	 * to make the code that updates C-States be called once.
 	 */
 
-	if (pr->id == 0 && cpuidle_get_driver() == &acpi_idle_driver) {
+	if (pr->id == 0 && acpi_processor_using_idle_driver()) {
 
 		/* Protect against cpu-hotplug */
 		get_online_cpus();
