@@ -2801,7 +2801,12 @@ static int c0_cpufreq_qos_handler(struct notifier_block *b,
                return NOTIFY_OK;
        }
 	
-	   if (strcmp(policy->governor->name, "pwrutilx")) {
+       if (strcmp(policy->governor->name, "pwrutilx")) {
+               cpufreq_cpu_put(policy);
+               return NOTIFY_OK;
+       }
+
+       if (strcmp(policy->governor->name, "electroutil")) {
                cpufreq_cpu_put(policy);
                return NOTIFY_OK;
        }
@@ -2844,7 +2849,12 @@ static int c1_cpufreq_qos_handler(struct notifier_block *b,
                return NOTIFY_OK;
        }
 	
-	   if (strcmp(policy->governor->name, "pwrutilx")) {
+       if (strcmp(policy->governor->name, "pwrutilx")) {
+               cpufreq_cpu_put(policy);
+               return NOTIFY_OK;
+       }
+
+       if (strcmp(policy->governor->name, "electroutil")) {
                cpufreq_cpu_put(policy);
                return NOTIFY_OK;
        }

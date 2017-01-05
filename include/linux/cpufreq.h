@@ -604,6 +604,15 @@ extern struct cpufreq_governor cpufreq_gov_interactive;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SCHED)
 extern struct cpufreq_governor cpufreq_gov_sched;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_sched)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL)
+extern struct cpufreq_governor schedutil_gov;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&schedutil_gov)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_ELECTROUTIL)
+extern struct cpufreq_governor electroutil_gov;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&electroutil_gov)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_PWRUTILX)
+extern struct cpufreq_governor pwrutilx_gov;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&pwrutilx_gov)
 #endif
 
 /*********************************************************************

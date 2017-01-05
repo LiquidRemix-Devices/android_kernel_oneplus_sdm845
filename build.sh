@@ -20,7 +20,7 @@ export CROSS_COMPILE_ARM32=${HOME}/android/arm-linux-androideabi-4.9/bin/arm-lin
 DEFCONFIG="smurf_defconfig"
 
 # Kernel Details
-VER=".1.0.6"
+VER=".1.0.9"
 
 # Paths
 KERNEL_DIR=`pwd`
@@ -88,8 +88,8 @@ export LOCALVERSION=~`echo $AK_VER`
 export LOCALVERSION=~`echo $AK_VER`
 export ARCH=arm64
 export SUBARCH=arm64
-export KBUILD_BUILD_USER=matthewdalex
-export KBUILD_BUILD_HOST=DarkRoom
+export KBUILD_BUILD_USER=pappschlumpf
+export KBUILD_BUILD_HOST=Rizen7EM
 
 echo
 
