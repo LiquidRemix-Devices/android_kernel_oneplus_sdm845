@@ -7,3 +7,7 @@ obj-y += sde/
 obj-$(CONFIG_SPECTRA_CAMERA) += camera/
 obj-y += broadcast/
 obj-$(CONFIG_DVB_MPQ) += dvb/
+
+# TODO: remove me b/62057517
+subdir-ccflags-y += \
+	-Wno-parentheses-equality

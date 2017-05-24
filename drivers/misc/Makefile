@@ -77,3 +77,8 @@ $(obj)/lkdtm_rodata_objcopy.o: $(obj)/lkdtm_rodata.o FORCE
 	$(call if_changed,objcopy)
 
 obj-$(CONFIG_BOOTLOADER_LOG)	+= bootloader_log.o
+
+# TODO: remove me b/62057517
+subdir-ccflags-y += \
+	-Wno-ignored-attributes \
+	-Wno-header-guard

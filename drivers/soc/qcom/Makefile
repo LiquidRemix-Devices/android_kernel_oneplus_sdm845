@@ -97,3 +97,7 @@ obj-$(CONFIG_QSEE_IPC_IRQ_BRIDGE) += qsee_ipc_irq_bridge.o
 obj-y += project_info.o
 obj-$(CONFIG_RF_CABLE_DETECT) += op_rf_cable_monitor.o
 obj-$(CONFIG_QCOM_QDSS_BRIDGE) += qdss_bridge.o
+
+# TODO: remove me b/62057517
+subdir-ccflags-y += \
+	-Wno-ignored-attributes
