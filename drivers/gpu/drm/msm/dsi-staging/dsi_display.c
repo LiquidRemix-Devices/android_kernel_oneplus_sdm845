@@ -37,7 +37,6 @@
 #include <linux/notifier.h>
 #include <linux/sched.h>
 #include "../sde/sde_trace.h"
-#include <linux/pm_qos.h>
 #include <linux/cpufreq.h>
 #include <linux/pm_wakeup.h>
 
