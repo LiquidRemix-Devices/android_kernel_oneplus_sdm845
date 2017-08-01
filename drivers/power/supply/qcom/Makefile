@@ -10,3 +10,7 @@ obj-$(CONFIG_FG_BQ27541)	+= bq27541_fuelgauger.o
 obj-$(CONFIG_ONEPLUS_FASTCHG)	+= oneplus_fastchg.o op_dash_adapter.o
 obj-$(CONFIG_QPNP_QNOVO)	+= qpnp-qnovo.o battery.o
 obj-$(CONFIG_QPNP_TYPEC)	+= qpnp-typec.o
+
+#TODO: remove me b/62058353
+subdir-ccflags-y += \
+	-Wno-duplicate-decl-specifier

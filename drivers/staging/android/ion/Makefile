@@ -12,3 +12,8 @@ obj-$(CONFIG_ION_TEGRA) += tegra/
 obj-$(CONFIG_ION_HISI) += hisilicon/
 
 obj-$(CONFIG_ION_MSM) += msm/
+
+#TODO: remove me b/62058353
+# WE SHOULD FIX THIS ONE
+subdir-ccflags-y += \
+	-Wno-enum-conversion

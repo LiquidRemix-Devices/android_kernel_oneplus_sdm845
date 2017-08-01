@@ -18,6 +18,6 @@ obj-$(CONFIG_ARCH_MSM8953)	+= clock-cpu-8953.o
 obj-$(CONFIG_ARCH_MSM8953)	+= clock-rcgwr.o
 endif
 
-# TODO: remove me b/62057517
+# TODO: remove me b/62058353
 subdir-ccflags-y += \
 	-Wno-literal-conversion
