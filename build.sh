@@ -21,7 +21,7 @@ export KBUILD_COMPILER_STRING=$(~/android/Toolchains/clang/clang-r328903/bin/cla
 DEFCONFIG="smurf_defconfig"
 
 # Kernel Details
-VER=".1.4.6"
+VER=".1.4.7"
 
 # Paths
 KERNEL_DIR=`pwd`
@@ -90,7 +90,7 @@ export LOCALVERSION=~`echo $AK_VER`
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER=pappschlumpf
-export KBUILD_BUILD_HOST=Rizen7EM
+export KBUILD_BUILD_HOST=Gargamel
 
 echo
 
