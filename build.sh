@@ -16,7 +16,7 @@ export CROSS_COMPILE=${HOME}/android/aarch64-linux-android-4.9/bin/aarch64-linux
 DEFCONFIG="sdm845-perf_defconfig"
 
 # Kernel Details
-VER=".R0"
+VER=".R1"
 
 # Paths
 KERNEL_DIR=`pwd`
@@ -55,7 +55,7 @@ function make_dtb {
 }
 
 function make_boot {
-		cp -vr $ZIMAGE_DIR/Image.gz-dtb ~/android/AnyKernel2/zImage
+		cp -vr ~/android/op6/out/arch/arm64/boot/Image.gz-dtb ~/android/AnyKernel2/zImage
 }
 
 
