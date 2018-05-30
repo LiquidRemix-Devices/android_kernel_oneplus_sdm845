@@ -16,7 +16,7 @@ export CROSS_COMPILE=${HOME}/android/aarch64-linux-android-4.9/bin/aarch64-linux
 DEFCONFIG="sdm845-perf_defconfig"
 
 # Kernel Details
-VER=".R4"
+VER=".R5"
 
 # Paths
 KERNEL_DIR=`pwd`
