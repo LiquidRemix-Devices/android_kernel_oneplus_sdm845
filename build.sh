@@ -20,7 +20,7 @@ export CROSS_COMPILE_ARM32=${HOME}/android/arm-linux-androideabi-4.9/bin/arm-lin
 DEFCONFIG="chewie_defconfig"
 
 # Kernel Details
-VER=".R8"
+VER=".R9"
 
 # Paths
 KERNEL_DIR=`pwd`
