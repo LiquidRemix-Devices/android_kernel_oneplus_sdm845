@@ -17,10 +17,10 @@ export PATH=${CLANG_PATH}:${PATH}
 export CLANG_TRIPLE=aarch64-linux-gnu-
 export CROSS_COMPILE=${HOME}/android/Toolchains/aarch64-linux-android-4.9/bin/aarch64-linux-android-
 export CROSS_COMPILE_ARM32=${HOME}/android/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-
-DEFCONFIG="chewie_defconfig"
+DEFCONFIG="smurf_defconfig"
 
 # Kernel Details
-VER=".R11"
+VER=".1.0.0"
 
 # Paths
 KERNEL_DIR=`pwd`
@@ -82,7 +82,7 @@ echo -e "${restore}"
 
 
 # Vars
-BASE_AK_VER="Chewie"
+BASE_AK_VER="SmurfKernel"
 AK_VER="$BASE_AK_VER$VER"
 export LOCALVERSION=~`echo $AK_VER`
 export LOCALVERSION=~`echo $AK_VER`
