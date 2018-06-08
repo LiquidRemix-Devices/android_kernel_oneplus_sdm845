@@ -12,10 +12,10 @@ clear
 THREAD="-j$(grep -c ^processor /proc/cpuinfo)"
 KERNEL="Image"
 DTBIMAGE="dtb"
-export CLANG_PATH=~/android/clang/clang-r328903/bin/
+export CLANG_PATH=~/android/Toolchains/clang/clang-r328903/bin/
 export PATH=${CLANG_PATH}:${PATH}
 export CLANG_TRIPLE=aarch64-linux-gnu-
-export CROSS_COMPILE=${HOME}/android/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+export CROSS_COMPILE=${HOME}/android/Toolchains/aarch64-linux-android-4.9/bin/aarch64-linux-android-
 export CROSS_COMPILE_ARM32=${HOME}/android/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-
 DEFCONFIG="chewie_defconfig"
 
@@ -35,8 +35,8 @@ function clean_all {
 		rm -rf $MODULES_DIR/*
 		cd ~/android/op6/out/kernel
 		rm -rf $DTBIMAGE
-		git reset --hard > /dev/null 2>&1
-		git clean -f -d > /dev/null 2>&1
+		#git reset --hard > /dev/null 2>&1
+		#git clean -f -d > /dev/null 2>&1
 		cd $KERNEL_DIR
 		echo
 		make clean && make mrproper
