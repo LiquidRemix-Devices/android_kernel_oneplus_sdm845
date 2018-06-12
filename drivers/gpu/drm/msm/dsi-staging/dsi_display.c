@@ -40,6 +40,7 @@
 
 #include <linux/msm_drm_notify.h>
 #include <linux/notifier.h>
+#include <linux/lcd_notify.h>
 
 #define BIG_CPU_NUMBER 4
 #if defined(CONFIG_ARCH_SDM845)
@@ -7020,6 +7021,7 @@ static int msm_drm_buffer_state_change(struct notifier_block *nb,
                         pm_print_active_wakeup_sources_queue(true);
                         pr_debug("::: LCD start off :::\n");
                 }
+		lcd_notifier_call_chain(LCD_EVENT_OFF_END, NULL);
                 break;
         case MSM_DRM_BLANK_UNBLANK:
                 if (val == MSM_DRM_EARLY_EVENT_BLANK) {
@@ -7054,6 +7056,7 @@ static int msm_drm_buffer_state_change(struct notifier_block *nb,
                         pm_print_active_wakeup_sources_queue(false);
                         pr_debug("::: LCD is on :::\n");
                 }
+		lcd_notifier_call_chain(LCD_EVENT_ON_START, NULL);
                 break;
         default:
                 break;
