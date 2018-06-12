@@ -2800,6 +2800,11 @@ static int c0_cpufreq_qos_handler(struct notifier_block *b,
                cpufreq_cpu_put(policy);
                return NOTIFY_OK;
        }
+	
+	   if (strcmp(policy->governor->name, "pwrutilx")) {
+               cpufreq_cpu_put(policy);
+               return NOTIFY_OK;
+       }
 
        ret = get_c0_available_cpufreq(policy);
        if (ret) {
@@ -2835,6 +2840,11 @@ static int c1_cpufreq_qos_handler(struct notifier_block *b,
        }
 
        if (strcmp(policy->governor->name, "schedutil")) {
+               cpufreq_cpu_put(policy);
+               return NOTIFY_OK;
+       }
+	
+	   if (strcmp(policy->governor->name, "pwrutilx")) {
                cpufreq_cpu_put(policy);
                return NOTIFY_OK;
        }
