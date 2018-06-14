@@ -8,7 +8,7 @@ NAME = Roaring Lionus
 # To see a list of typical targets execute "make help"
 # More info can be located in ./README
 # Comments in this file are targeted only to the developer, do not
-# expect to learn how to build the kernel reading this file.
+# expect to learn how to build the kernel reading this file
 
 # o Do not use make's built-in rules and variables
 #   (this increases performance and avoids hard-to-debug behaviour);
@@ -660,6 +660,7 @@ endif
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= $(call cc-option,-Oz,-Os)
 KBUILD_CFLAGS	+= $(call cc-disable-warning,maybe-uninitialized,)
+KBUILD_CFLAGS   += -O3
 else
 ifdef CONFIG_PROFILE_ALL_BRANCHES
 KBUILD_CFLAGS	+= -O2 $(call cc-disable-warning,maybe-uninitialized,)
