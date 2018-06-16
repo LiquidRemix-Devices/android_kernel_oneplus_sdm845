@@ -28,7 +28,8 @@ unsigned long boosted_cpu_util(int cpu);
 #endif
 
 #define EUGOV_KTHREAD_PRIORITY	50
-#define DEFAULT_SUSPEND_MAX_FREQ 1516800
+#define DEFAULT_SUSPEND_MAX_FREQ_SILVER 1324800
+#define DEFAULT_SUSPEND_MAX_FREQ_GOLD 1209600
 #define DEFAULT_SUSPEND_CAPACITY_FACTOR 10
 
 struct eugov_tunables {
@@ -679,8 +680,8 @@ static ssize_t silver_suspend_max_freq_store(struct gov_attr_set *attr_set,
 	if (kstrtouint(buf, 10, &max_freq))
 		return -EINVAL;
 
-	if (max_freq > 0)
-		cpufreq_driver_resolve_freq(eg_policy->policy, max_freq);
+	/*if (max_freq > 0)
+		cpufreq_driver_resolve_freq(eg_policy->policy, max_freq); */
 
 	tunables->silver_suspend_max_freq = max_freq;
 
@@ -704,8 +705,8 @@ static ssize_t gold_suspend_max_freq_store(struct gov_attr_set *attr_set,
 	if (kstrtouint(buf, 10, &max_freq))
 		return -EINVAL;
 
-	if (max_freq > 0)
-		cpufreq_driver_resolve_freq(eg_policy->policy, max_freq);
+	/*if (max_freq > 0)
+		cpufreq_driver_resolve_freq(eg_policy->policy, max_freq);*/
 
 	tunables->gold_suspend_max_freq = max_freq;
 
@@ -948,8 +949,8 @@ static int eugov_init(struct cpufreq_policy *policy)
 	tunables->rate_limit_us = LATENCY_MULTIPLIER;
 	tunables->hispeed_load = DEFAULT_HISPEED_LOAD;
 	tunables->hispeed_freq = 1132800;
-	tunables->silver_suspend_max_freq = DEFAULT_SUSPEND_MAX_FREQ;
-	tunables->gold_suspend_max_freq = DEFAULT_SUSPEND_MAX_FREQ;
+	tunables->silver_suspend_max_freq = DEFAULT_SUSPEND_MAX_FREQ_SILVER;
+	tunables->gold_suspend_max_freq = DEFAULT_SUSPEND_MAX_FREQ_GOLD;
 	tunables->suspend_capacity_factor = DEFAULT_SUSPEND_CAPACITY_FACTOR;
 	lat = policy->cpuinfo.transition_latency / NSEC_PER_USEC;
 	if (lat)
