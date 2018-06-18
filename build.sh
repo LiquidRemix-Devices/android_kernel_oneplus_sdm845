@@ -20,7 +20,7 @@ export CROSS_COMPILE_ARM32=${HOME}/android/arm-linux-androideabi-4.9/bin/arm-lin
 DEFCONFIG="smurf_defconfig"
 
 # Kernel Details
-VER=".1.0.9"
+VER=".1.0.0"
 
 # Paths
 KERNEL_DIR=`pwd`
