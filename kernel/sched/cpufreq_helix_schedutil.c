@@ -23,15 +23,13 @@
 unsigned long boosted_cpu_util(int cpu);
 #endif
 
-#define UP_RATE_LIMIT				1000
-#define DOWN_RATE_LIMIT				5000
+#define RATE_LIMIT				1000
+
 #define BIT_SHIFT_1 				9
 #define BIT_SHIFT_2 				9
 #define TARGET_LOAD_1				32
 #define TARGET_LOAD_2				73
 
-#define UP_RATE_LIMIT_BIGC			1000
-#define DOWN_RATE_LIMIT_BIGC			5000
 #define BIT_SHIFT_1_BIGC 			10
 #define BIT_SHIFT_2_BIGC 			6
 #define TARGET_LOAD_1_BIGC 			24
@@ -48,7 +46,7 @@ struct hxgov_tunables {
 	unsigned int bit_shift1;
 	unsigned int bit_shift2;
 	unsigned int target_load1;
-	unsigned int target_load2
+	unsigned int target_load2;
 };
 
 struct hxgov_policy {
@@ -176,8 +174,7 @@ static void hxgov_update_commit(struct hxgov_policy *sg_policy, u64 time,
  */
 static unsigned int get_next_freq(struct hxgov_policy *sg_policy,
 				  unsigned long util, unsigned long max)
-{
-	struct hxgov_policy *sg_policy = sg_cpu->sg_policy;	
+{	
 	struct cpufreq_policy *policy = sg_policy->policy;
 	struct hxgov_tunables *tunables = sg_policy->tunables;
 	unsigned int freq = arch_scale_freq_invariant() ?
@@ -916,6 +913,7 @@ static int hxgov_init(struct cpufreq_policy *policy)
 {
 	struct hxgov_policy *sg_policy;
 	struct hxgov_tunables *tunables;
+	unsigned int cpu = cpumask_first(policy->related_cpus);
 	unsigned int lat;
 	int ret = 0;
 
@@ -961,15 +959,13 @@ static int hxgov_init(struct cpufreq_policy *policy)
 	tunables->hispeed_freq = 1132800;
 
 	if (cpu < 2){
-		tunables->up_rate_limit_us = UP_RATE_LIMIT;
-		tunables->down_rate_limit_us = DOWN_RATE_LIMIT;
+		tunables->rate_limit_us = RATE_LIMIT;
 		tunables->bit_shift1 = BIT_SHIFT_1;
 		tunables->bit_shift2 = BIT_SHIFT_2;
 		tunables->target_load1 = TARGET_LOAD_1;
 		tunables->target_load2 = TARGET_LOAD_2;
 	} else {
-		tunables->up_rate_limit_us = UP_RATE_LIMIT_BIGC;
-		tunables->down_rate_limit_us = DOWN_RATE_LIMIT_BIGC;
+		tunables->rate_limit_us = RATE_LIMIT;
 		tunables->bit_shift1 = BIT_SHIFT_1_BIGC;
 		tunables->bit_shift2 = BIT_SHIFT_2_BIGC;
 		tunables->target_load1 = TARGET_LOAD_1_BIGC;
