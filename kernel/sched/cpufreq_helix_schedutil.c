@@ -1112,7 +1112,7 @@ static struct cpufreq_governor helix_schedutil_gov = {
 	.limits = hxgov_limits,
 };
 
-#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_HELIX
+#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_HELIX_SCHEDUTIL
 struct cpufreq_governor *cpufreq_default_governor(void)
 {
 	return &helix_schedutil_gov;
