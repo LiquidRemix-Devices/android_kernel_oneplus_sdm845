@@ -66,6 +66,14 @@ static u32 get_min_freq(struct boost_drv *b, u32 cpu)
 	return CONFIG_REMOVE_INPUT_BOOST_FREQ_PERF;
 }
 
+static u32 get_min_freq(struct boost_drv *b, u32 cpu)
+{
+	if (cpumask_test_cpu(cpu, cpu_lp_mask))
+		return CONFIG_REMOVE_INPUT_BOOST_FREQ_LP;
+
+	return CONFIG_REMOVE_INPUT_BOOST_FREQ_PERF;
+}
+
 static u32 get_boost_state(struct boost_drv *b)
 {
 	u32 state;
