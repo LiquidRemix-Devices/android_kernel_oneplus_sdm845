@@ -34,9 +34,6 @@
 #include <linux/msm_drm_notify.h>
 #include <linux/notifier.h>
 #include <linux/sched.h>
-#include <linux/pm_qos.h>
-#include <linux/cpufreq.h>
-#include <linux/pm_wakeup.h>
 
 #include <linux/msm_drm_notify.h>
 #include <linux/notifier.h>
@@ -45,26 +42,10 @@
 #include <linux/state_notifier.h>
 #endif
 
-#define BIG_CPU_NUMBER 4
-#if defined(CONFIG_ARCH_SDM845)
-#define LCDSPEEDUP_BIG_CPU_QOS_FREQ    2649600
-#elif defined(CONFIG_ARCH_MSM8998)
-#define LCDSPEEDUP_BIG_CPU_QOS_FREQ    2361600
-#elif defined(CONFIG_ARCH_MSM8996)
-#define LCDSPEEDUP_BIG_CPU_QOS_FREQ    2073600
-#endif
-#define LCD_QOS_TIMEOUT 1000000
-#define NO_BOOST        0
-
 int backlight_min = 0;
 module_param(backlight_min, int, 0644);
 
-static struct pm_qos_request lcdspeedup_little_cpu_qos;
-static struct pm_qos_request lcdspeedup_big_cpu_qos;
-
 #define to_dsi_bridge(x)  container_of((x), struct dsi_bridge, base)
-
-
 #define to_dsi_display(x) container_of(x, struct dsi_display, host)
 #define INT_BASE_10 10
 #define NO_OVERRIDE -1
@@ -7015,53 +6996,12 @@ static int msm_drm_buffer_state_change(struct notifier_block *nb,
 
         switch (blank) {
         case MSM_DRM_BLANK_POWERDOWN:
-                if (val == MSM_DRM_EARLY_EVENT_BLANK) {
-                        pm_qos_update_request(&lcdspeedup_little_cpu_qos,
-                                MIN_CPUFREQ);
-                        pm_qos_update_request(&lcdspeedup_big_cpu_qos,
-                                MIN_CPUFREQ);
-                        /* add print actvie ws */
-                        pm_print_active_wakeup_sources_queue(true);
-                        pr_debug("::: LCD start off :::\n");
-                }
 		lcd_notifier_call_chain(LCD_EVENT_OFF_END, NULL);
 		#ifdef CONFIG_STATE_NOTIFIER
 		state_suspend();
 		#endif
                 break;
         case MSM_DRM_BLANK_UNBLANK:
-                if (val == MSM_DRM_EARLY_EVENT_BLANK) {
-                        struct cpufreq_policy *policy;
-                         /* Speed up LCD on */
-                        /* Fetch little cpu policy
-                        * and drive the CPU towards target frequency
-                        */
-                        pm_qos_update_request_timeout(
-                                &lcdspeedup_little_cpu_qos, MAX_CPUFREQ,
-                                LCD_QOS_TIMEOUT);
-
-                        /* Fetch big cpu policy
-                        * and drive big cpu towards target frequency
-                        */
-                        policy = cpufreq_cpu_get(BIG_CPU_NUMBER);
-                        if (policy)  {
-                                cpufreq_driver_target(policy,
-                                        LCDSPEEDUP_BIG_CPU_QOS_FREQ,
-                                        CPUFREQ_RELATION_H);
-                                pm_qos_update_request_timeout(
-                                        &lcdspeedup_big_cpu_qos,
-                                        (MAX_CPUFREQ-4), LCD_QOS_TIMEOUT);
-                        } else
-                                return NOTIFY_OK;
-                        cpufreq_cpu_put(policy);
-                }
-
-                if (val == MSM_DRM_EVENT_BLANK) {
-                        sched_set_boost(NO_BOOST);
-                        /* remove print actvie ws */
-                        pm_print_active_wakeup_sources_queue(false);
-                        pr_debug("::: LCD is on :::\n");
-                }
 		lcd_notifier_call_chain(LCD_EVENT_ON_START, NULL);
 		#ifdef CONFIG_STATE_NOTIFIER
 		state_resume();
@@ -7070,22 +7010,4 @@ static int msm_drm_buffer_state_change(struct notifier_block *nb,
         default:
                 break;
         }
-        return NOTIFY_OK;
 }
-
-static struct notifier_block msm_drm_notifier_block = {
-        .notifier_call = msm_drm_buffer_state_change,
-        .priority = 1,
-};
-
-static int __init lcdscreen_speedup_init_pm_qos(void)
-{
-        msm_drm_register_client(&msm_drm_notifier_block);
-        pm_qos_add_request(&lcdspeedup_little_cpu_qos,
-                PM_QOS_C0_CPUFREQ_MIN, MIN_CPUFREQ);
-        pm_qos_add_request(&lcdspeedup_big_cpu_qos,
-                PM_QOS_C1_CPUFREQ_MIN, MIN_CPUFREQ);
-
-        return 0;
-}
-late_initcall(lcdscreen_speedup_init_pm_qos);
