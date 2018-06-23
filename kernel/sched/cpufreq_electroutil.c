@@ -76,6 +76,7 @@ struct eugov_cpu {
 	struct update_util_data update_util;
 	struct eugov_policy *eg_policy;
 
+	bool iowait_boost_pending;
 	unsigned long iowait_boost;
 	unsigned long iowait_boost_max;
 	u64 last_update;
@@ -131,7 +132,7 @@ static void eugov_update_commit(struct eugov_policy *eg_policy, u64 time,
 
 	if (policy->fast_switch_enabled) {
 		next_freq = cpufreq_driver_fast_switch(policy, next_freq);
-		if (next_freq == CPUFREQ_ENTRY_INVALID)
+		if (!next_freq)
 			return;
 
 		policy->cur = next_freq;
@@ -245,31 +246,57 @@ static void eugov_get_util(unsigned long *util, unsigned long *max, int cpu)
 static void eugov_set_iowait_boost(struct eugov_cpu *eg_cpu, u64 time,
 				   unsigned int flags)
 {
-	if (flags & SCHED_CPUFREQ_IOWAIT) {
-		eg_cpu->iowait_boost = eg_cpu->iowait_boost_max;
-	} else if (eg_cpu->iowait_boost) {
+	/* Clear iowait_boost if the CPU apprears to have been idle. */
+	if (eg_cpu->iowait_boost) {
 		s64 delta_ns = time - eg_cpu->last_update;
 
-		/* Clear iowait_boost if the CPU apprears to have been idle. */
-		if (delta_ns > TICK_NSEC)
+		if (delta_ns > TICK_NSEC) {
 			eg_cpu->iowait_boost = 0;
+			eg_cpu->iowait_boost_pending = false;
+		}
+	}
+
+	if (flags & SCHED_CPUFREQ_IOWAIT) {
+		if (eg_cpu->iowait_boost_pending)
+			return;
+
+		eg_cpu->iowait_boost_pending = true;
+
+		if (eg_cpu->iowait_boost) {
+			eg_cpu->iowait_boost <<= 1;
+			if (eg_cpu->iowait_boost > eg_cpu->iowait_boost_max)
+				eg_cpu->iowait_boost = eg_cpu->iowait_boost_max;
+		} else {
+			eg_cpu->iowait_boost = eg_cpu->eg_policy->policy->min;
+		}
 	}
 }
 
 static void eugov_iowait_boost(struct eugov_cpu *eg_cpu, unsigned long *util,
 			       unsigned long *max)
 {
-	unsigned long boost_util = eg_cpu->iowait_boost;
-	unsigned long boost_max = eg_cpu->iowait_boost_max;
+	unsigned int boost_util, boost_max;
 
-	if (!boost_util)
+	if (!eg_cpu->iowait_boost)
 		return;
+
+	if (eg_cpu->iowait_boost_pending) {
+		eg_cpu->iowait_boost_pending = false;
+	} else {
+		eg_cpu->iowait_boost >>= 1;
+		if (eg_cpu->iowait_boost < eg_cpu->eg_policy->policy->min) {
+			eg_cpu->iowait_boost = 0;
+			return;
+		}
+	}
+
+	boost_util = eg_cpu->iowait_boost;
+	boost_max = eg_cpu->iowait_boost_max;
 
 	if (*util * boost_max < *max * boost_util) {
 		*util = boost_util;
 		*max = boost_max;
 	}
-	eg_cpu->iowait_boost >>= 1;
 }
 
 static unsigned long freq_to_util(struct eugov_policy *eg_policy,
