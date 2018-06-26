@@ -443,7 +443,7 @@ static void pwrgov_update_single(struct update_util_data *hook, u64 time,
 	raw_spin_unlock(&sg_policy->update_lock);
 }
 
-static unsigned int pwrgov_next_freq_shared(struct pwrgov_cpu *sg_cpu)
+static unsigned int pwrgov_next_freq_shared(struct pwrgov_cpu *sg_cpu, u64 time)
 {
 	struct pwrgov_policy *sg_policy = sg_cpu->sg_policy;
 	struct cpufreq_policy *policy = sg_policy->policy;
@@ -463,7 +463,7 @@ static unsigned int pwrgov_next_freq_shared(struct pwrgov_cpu *sg_cpu)
 		 * enough, don't take the CPU into account as it probably is
 		 * idle now (and clear iowait_boost for it).
 		 */
-		delta_ns = last_freq_update_time - j_sg_cpu->last_update;
+		delta_ns = time - j_sg_cpu->last_update;
 		if (delta_ns > stale_ns) {
 			j_sg_cpu->iowait_boost = 0;
 			j_sg_cpu->iowait_boost_pending = false;
@@ -529,7 +529,7 @@ static void pwrgov_update_shared(struct update_util_data *hook, u64 time,
 		if (flags & SCHED_CPUFREQ_RT_DL)
 			next_f = sg_policy->policy->cpuinfo.max_freq;
 		else
-			next_f = pwrgov_next_freq_shared(sg_cpu);
+			next_f = pwrgov_next_freq_shared(sg_cpu, time);
 
 		pwrgov_update_commit(sg_policy, time, next_f);
 	}

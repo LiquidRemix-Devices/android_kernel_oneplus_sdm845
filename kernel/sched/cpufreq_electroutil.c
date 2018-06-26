@@ -453,7 +453,7 @@ static void eugov_update_single(struct update_util_data *hook, u64 time,
 	raw_spin_unlock(&eg_policy->update_lock);
 }
 
-static unsigned int eugov_next_freq_shared(struct eugov_cpu *eg_cpu)
+static unsigned int eugov_next_freq_shared(struct eugov_cpu *eg_cpu, u64 time)
 {
 	struct eugov_policy *eg_policy = eg_cpu->eg_policy;
 	struct cpufreq_policy *policy = eg_policy->policy;
@@ -473,7 +473,7 @@ static unsigned int eugov_next_freq_shared(struct eugov_cpu *eg_cpu)
 		 * enough, don't take the CPU into account as it probably is
 		 * idle now (and clear iowait_boost for it).
 		 */
-		delta_ns = last_freq_update_time - j_eg_cpu->last_update;
+		delta_ns = time - j_eg_cpu->last_update;
 		if (delta_ns > stale_ns) {
 			j_eg_cpu->iowait_boost = 0;
 			continue;
@@ -538,7 +538,7 @@ static void eugov_update_shared(struct update_util_data *hook, u64 time,
 		if (flags & SCHED_CPUFREQ_RT_DL)
 			next_f = eg_policy->policy->cpuinfo.max_freq;
 		else
-			next_f = eugov_next_freq_shared(eg_cpu);
+			next_f = eugov_next_freq_shared(eg_cpu, time);
 
 		eugov_update_commit(eg_policy, time, next_f);
 	}
