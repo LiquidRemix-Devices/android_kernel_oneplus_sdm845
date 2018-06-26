@@ -437,7 +437,6 @@ endif
 
 comment "CPU frequency scaling drivers"
 
->>>>>>> 567417b... cpu_input_boost: Introduce driver for event-based CPU boosting
 config CPUFREQ_DT
 	tristate "Generic DT based cpufreq driver"
 	depends on HAVE_CLK && OF
