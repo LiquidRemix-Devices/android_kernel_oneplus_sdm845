@@ -242,6 +242,54 @@ static void sugov_iowait_boost(struct sugov_cpu *sg_cpu, unsigned long *util,
 	}
 }
 
+#ifdef CONFIG_CAPACITY_CLAMPING
+
+static inline
+void cap_clamp_cpu_range(unsigned int cpu, unsigned int *cap_min,
+			 unsigned int *cap_max)
+{
+	struct cap_clamp_cpu *cgc;
+
+	*cap_min = 0;
+	cgc = &cpu_rq(cpu)->cap_clamp_cpu[CAP_CLAMP_MIN];
+	if (cgc->node)
+		*cap_min = cgc->value;
+
+	*cap_max = SCHED_CAPACITY_SCALE;
+	cgc = &cpu_rq(cpu)->cap_clamp_cpu[CAP_CLAMP_MAX];
+	if (cgc->node)
+		*cap_max = cgc->value;
+}
+
+static inline
+unsigned int cap_clamp_cpu_util(unsigned int cpu, unsigned int util)
+{
+	unsigned int cap_max, cap_min;
+
+	cap_clamp_cpu_range(cpu, &cap_min, &cap_max);
+	return clamp(util, cap_min, cap_max);
+}
+
+static inline
+void cap_clamp_compose(unsigned int *cap_min, unsigned int *cap_max,
+		       unsigned int j_cap_min, unsigned int j_cap_max)
+{
+	*cap_min = max(*cap_min, j_cap_min);
+	*cap_max = max(*cap_max, j_cap_max);
+}
+
+#define cap_clamp_util_range(util, cap_min, cap_max) \
+	clamp_t(typeof(util), util, cap_min, cap_max)
+
+#else
+
+#define cap_clamp_cpu_range(cpu, cap_min, cap_max) { }
+#define cap_clamp_cpu_util(cpu, util) util
+#define cap_clamp_compose(cap_min, cap_max, j_cap_min, j_cap_max) { }
+#define cap_clamp_util_range(util, cap_min, cap_max) util
+
+#endif /* CONFIG_CAPACITY_CLAMPING */
+
 static unsigned long freq_to_util(struct sugov_policy *sg_policy,
 				  unsigned int freq)
 {
@@ -362,7 +410,13 @@ static void sugov_update_single(struct update_util_data *hook, u64 time,
 
 	raw_spin_lock(&sg_policy->update_lock);
 	if (flags & SCHED_CPUFREQ_RT_DL) {
+#ifdef CONFIG_CAPACITY_CLAMPING
+		util = cap_clamp_cpu_util(smp_processor_id(),
+					  SCHED_CAPACITY_SCALE);
+		next_f = get_next_freq(sg_policy, util, policy->cpuinfo.max_freq);
+#else
 		next_f = policy->cpuinfo.max_freq;
+#endif /* CONFIG_CAPACITY_CLAMPING */
 	} else {
 		sugov_get_util(&util, &max, sg_cpu->cpu);
 		if (sg_policy->max != max) {
@@ -384,6 +438,7 @@ static void sugov_update_single(struct update_util_data *hook, u64 time,
 					sg_cpu->walt_load.pl, flags);
 		sugov_iowait_boost(sg_cpu, &util, &max);
 		sugov_walt_adjust(sg_cpu, &util, &max);
+		util = cap_clamp_cpu_util(smp_processor_id(), util);
 		next_f = get_next_freq(sg_policy, util, max);
 		/*
 		 * Do not reduce the frequency if the CPU has not been idle
@@ -406,11 +461,17 @@ static unsigned int sugov_next_freq_shared(struct sugov_cpu *sg_cpu, u64 time)
 	struct sugov_policy *sg_policy = sg_cpu->sg_policy;
 	struct cpufreq_policy *policy = sg_policy->policy;
 	unsigned long util = 0, max = 1;
+	unsigned int cap_max = SCHED_CAPACITY_SCALE;
+	unsigned int cap_min = 0;
 	unsigned int j;
 
+	/* Initialize clamping range based on caller CPU constraints */
+	cap_clamp_cpu_range(smp_processor_id(), &cap_min, &cap_max);
+	
 	for_each_cpu(j, policy->cpus) {
 		struct sugov_cpu *j_sg_cpu = &per_cpu(sugov_cpu, j);
 		unsigned long j_util, j_max;
+		unsigned int j_cap_max, j_cap_min;
 		s64 delta_ns;
 
 		/*
@@ -426,10 +487,11 @@ static unsigned int sugov_next_freq_shared(struct sugov_cpu *sg_cpu, u64 time)
 			j_sg_cpu->iowait_boost_pending = false;
 			continue;
 		}
-		if (j_sg_cpu->flags & SCHED_CPUFREQ_RT_DL)
-			return policy->cpuinfo.max_freq;
 
-		j_util = j_sg_cpu->util;
+		if (j_sg_cpu->flags & SCHED_CPUFREQ_RT_DL)
+			j_util = cap_clamp_cpu_util(j, SCHED_CAPACITY_SCALE);
+		else
+			j_util = j_sg_cpu->util;
 		j_max = j_sg_cpu->max;
 		if (j_util * max >= j_max * util) {
 			util = j_util;
@@ -438,8 +500,21 @@ static unsigned int sugov_next_freq_shared(struct sugov_cpu *sg_cpu, u64 time)
 
 		sugov_iowait_boost(j_sg_cpu, &util, &max);
 		sugov_walt_adjust(j_sg_cpu, &util, &max);
-	}
 
+		/*
+		 * Update clamping range based on this CPU constraints, but
+		 * only if this CPU is not currently idle. Idle CPUs do not
+		 * enforce constraints in a shared frequency domain.
+		 */
+		if (!idle_cpu(j)) {
+			cap_clamp_cpu_range(j, &j_cap_min, &j_cap_max);
+			cap_clamp_compose(&cap_min, &cap_max,
+					  j_cap_min, j_cap_max);
+		}
+	}
+	
+	/* Clamp utilization on aggregated CPUs ranges */
+	util = cap_clamp_util_range(util, cap_min, cap_max);
 	return get_next_freq(sg_policy, util, max);
 }
 
