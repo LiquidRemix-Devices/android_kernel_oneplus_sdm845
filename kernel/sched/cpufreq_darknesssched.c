@@ -360,6 +360,54 @@ static void dkgov_iowait_boost(struct dkgov_cpu *sg_cpu, unsigned long *util,
 	sg_cpu->iowait_boost >>= 1;
 }
 
+#ifdef CONFIG_CAPACITY_CLAMPING
+
+static inline
+void cap_clamp_cpu_range(unsigned int cpu, unsigned int *cap_min,
+			 unsigned int *cap_max)
+{
+	struct cap_clamp_cpu *cgc;
+
+	*cap_min = 0;
+	cgc = &cpu_rq(cpu)->cap_clamp_cpu[CAP_CLAMP_MIN];
+	if (cgc->node)
+		*cap_min = cgc->value;
+
+	*cap_max = SCHED_CAPACITY_SCALE;
+	cgc = &cpu_rq(cpu)->cap_clamp_cpu[CAP_CLAMP_MAX];
+	if (cgc->node)
+		*cap_max = cgc->value;
+}
+
+static inline
+unsigned int cap_clamp_cpu_util(unsigned int cpu, unsigned int util)
+{
+	unsigned int cap_max, cap_min;
+
+	cap_clamp_cpu_range(cpu, &cap_min, &cap_max);
+	return clamp(util, cap_min, cap_max);
+}
+
+static inline
+void cap_clamp_compose(unsigned int *cap_min, unsigned int *cap_max,
+		       unsigned int j_cap_min, unsigned int j_cap_max)
+{
+	*cap_min = max(*cap_min, j_cap_min);
+	*cap_max = max(*cap_max, j_cap_max);
+}
+
+#define cap_clamp_util_range(util, cap_min, cap_max) \
+	clamp_t(typeof(util), util, cap_min, cap_max)
+
+#else
+
+#define cap_clamp_cpu_range(cpu, cap_min, cap_max) { }
+#define cap_clamp_cpu_util(cpu, util) util
+#define cap_clamp_compose(cap_min, cap_max, j_cap_min, j_cap_max) { }
+#define cap_clamp_util_range(util, cap_min, cap_max) util
+
+#endif /* CONFIG_CAPACITY_CLAMPING */
+
 static void dkgov_update_single(struct update_util_data *hook, u64 time,
 				unsigned int flags)
 {
@@ -375,11 +423,14 @@ static void dkgov_update_single(struct update_util_data *hook, u64 time,
 	if (!dkgov_should_update_freq(sg_policy, time))
 		return;
 
-	if (flags & SCHED_CPUFREQ_DL) {
-		next_f = policy->cpuinfo.max_freq;
+	if (flags & SCHED_CPUFREQ_RT_DL) {
+		util = cap_clamp_cpu_util(smp_processor_id(),
+					  SCHED_CAPACITY_SCALE);
+		next_f = get_next_freq(sg_cpu, util, policy->cpuinfo.max_freq);
 	} else {
 		dkgov_get_util(&util, &max, time);
 		dkgov_iowait_boost(sg_cpu, &util, &max);
+		util = cap_clamp_cpu_util(smp_processor_id(), util);
 		next_f = get_next_freq(sg_cpu, util, max);
 	}
 	dkgov_update_commit(sg_policy, time, next_f);
@@ -391,18 +442,21 @@ static unsigned int dkgov_next_freq_shared(struct dkgov_cpu *sg_cpu,
 {
 	struct dkgov_policy *sg_policy = sg_cpu->sg_policy;
 	struct cpufreq_policy *policy = sg_policy->policy;
-	unsigned int max_f = policy->cpuinfo.max_freq;
 	u64 last_freq_update_time = sg_policy->last_freq_update_time;
+	unsigned int cap_max = SCHED_CAPACITY_SCALE;
+	unsigned int cap_min = 0;
 	unsigned int j;
 
-	if (flags & SCHED_CPUFREQ_DL)
-		return max_f;
 
 	dkgov_iowait_boost(sg_cpu, &util, &max);
+
+	/* Initialize clamping range based on caller CPU constraints */
+	cap_clamp_cpu_range(smp_processor_id(), &cap_min, &cap_max);
 
 	for_each_cpu(j, policy->cpus) {
 		struct dkgov_cpu *j_sg_cpu;
 		unsigned long j_util, j_max;
+		unsigned int j_cap_max, j_cap_min;
 		s64 delta_ns;
 
 		if (j == smp_processor_id())
@@ -421,10 +475,11 @@ static unsigned int dkgov_next_freq_shared(struct dkgov_cpu *sg_cpu,
 			j_sg_cpu->iowait_boost = 0;
 			continue;
 		}
-		if (j_sg_cpu->flags & SCHED_CPUFREQ_DL)
-			return max_f;
 
-		j_util = j_sg_cpu->util;
+		if (j_sg_cpu->flags & SCHED_CPUFREQ_RT_DL)
+			j_util = cap_clamp_cpu_util(j, SCHED_CAPACITY_SCALE);
+		else
+			j_util = j_sg_cpu->util;
 		j_max = j_sg_cpu->max;
 		if (j_util * max > j_max * util) {
 			util = j_util;
@@ -432,8 +487,21 @@ static unsigned int dkgov_next_freq_shared(struct dkgov_cpu *sg_cpu,
 		}
 
 		dkgov_iowait_boost(j_sg_cpu, &util, &max);
+
+		/*
+		 * Update clamping range based on this CPU constraints, but
+		 * only if this CPU is not currently idle. Idle CPUs do not
+		 * enforce constraints in a shared frequency domain.
+		 */
+		if (!idle_cpu(j)) {
+			cap_clamp_cpu_range(j, &j_cap_min, &j_cap_max);
+			cap_clamp_compose(&cap_min, &cap_max,
+					  j_cap_min, j_cap_max);
+		}
 	}
 
+	/* Clamp utilization on aggregated CPUs ranges */
+	util = cap_clamp_util_range(util, cap_min, cap_max);
 	return get_next_freq(sg_cpu, util, max);
 }
 
