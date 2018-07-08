@@ -268,7 +268,7 @@ int ipa3_send(struct ipa3_sys_context *sys,
 		struct ipa3_desc *desc,
 		bool in_atomic)
 {
-	struct ipa3_tx_pkt_wrapper *tx_pkt, *tx_pkt_first;
+	struct ipa3_tx_pkt_wrapper *tx_pkt, *tx_pkt_first = NULL;
 	struct ipahal_imm_cmd_pyld *tag_pyld_ret = NULL;
 	struct ipa3_tx_pkt_wrapper *next_pkt;
 	struct gsi_xfer_elem *gsi_xfer_elem_array = NULL;
@@ -296,8 +296,8 @@ int ipa3_send(struct ipa3_sys_context *sys,
 	}
 
 	gsi_xfer_elem_array =
-		kzalloc(num_desc * sizeof(struct gsi_xfer_elem),
-		mem_flag);
+		kcalloc(num_desc, sizeof(struct gsi_xfer_elem),
+			mem_flag);
 	if (!gsi_xfer_elem_array) {
 		IPAERR("Failed to alloc mem for gsi xfer array.\n");
 		return -EFAULT;
@@ -437,6 +437,8 @@ failure_dma_map:
 
 failure:
 	ipahal_destroy_imm_cmd(tag_pyld_ret);
+	if (!tx_pkt_first)
+		goto kfree_gsi_array;
 	tx_pkt = tx_pkt_first;
 	for (j = 0; j < i; j++) {
 		next_pkt = list_next_entry(tx_pkt, link);
@@ -458,6 +460,7 @@ failure:
 		tx_pkt = next_pkt;
 	}
 
+kfree_gsi_array:
 	kfree(gsi_xfer_elem_array);
 
 	spin_unlock_bh(&sys->spinlock);
@@ -1015,8 +1018,9 @@ int ipa3_setup_sys_pipe(struct ipa_sys_connect_params *sys_in, u32 *clnt_hdl)
 
 	if (ep->sys->repl_hdlr == ipa3_fast_replenish_rx_cache) {
 		ep->sys->repl.capacity = ep->sys->rx_pool_sz + 1;
-		ep->sys->repl.cache = kzalloc(ep->sys->repl.capacity *
-				sizeof(void *), GFP_KERNEL);
+		ep->sys->repl.cache = kcalloc(ep->sys->repl.capacity,
+					      sizeof(void *),
+					      GFP_KERNEL);
 		if (!ep->sys->repl.cache) {
 			IPAERR("ep=%d fail to alloc repl cache\n", ipa_ep_idx);
 			ep->sys->repl_hdlr = ipa3_replenish_rx_cache;
@@ -1342,7 +1346,7 @@ int ipa3_tx_dp(enum ipa_client_type dst, struct sk_buff *skb,
 		 * 1 desc may be needed for the PACKET_INIT;
 		 * 1 desc for each frag
 		 */
-		desc = kzalloc(sizeof(*desc) * (num_frags + 3), GFP_ATOMIC);
+		desc = kcalloc(num_frags + 3, sizeof(*desc), GFP_ATOMIC);
 		if (!desc) {
 			IPAERR("failed to alloc desc array\n");
 			goto fail_gen;

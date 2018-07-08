@@ -5717,7 +5717,7 @@ long group_norm_util(struct energy_env *eenv, struct sched_group *sg)
 }
 
 static int __find_new_capacity(unsigned long util,
-			       const struct sched_group_energy const *sge)
+			       const struct sched_group_energy *sge)
 {
 	int idx;
 
@@ -5730,7 +5730,7 @@ static int __find_new_capacity(unsigned long util,
 }
 
 static int find_new_capacity(struct energy_env *eenv,
-			     const struct sched_group_energy const *sge)
+			     const struct sched_group_energy *sge)
 {
 	int idx, max_idx = sge->nr_cap_states - 1;
 	unsigned long util = group_max_util(eenv);
@@ -11044,10 +11044,10 @@ int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
 	struct cfs_rq *cfs_rq;
 	int i;
 
-	tg->cfs_rq = kzalloc(sizeof(cfs_rq) * nr_cpu_ids, GFP_KERNEL);
+	tg->cfs_rq = kcalloc(nr_cpu_ids, sizeof(cfs_rq), GFP_KERNEL);
 	if (!tg->cfs_rq)
 		goto err;
-	tg->se = kzalloc(sizeof(se) * nr_cpu_ids, GFP_KERNEL);
+	tg->se = kcalloc(nr_cpu_ids, sizeof(se), GFP_KERNEL);
 	if (!tg->se)
 		goto err;
 

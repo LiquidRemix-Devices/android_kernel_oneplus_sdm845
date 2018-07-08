@@ -50,6 +50,12 @@ module_param(sched_boost_on_input, uint, 0644);
 
 static bool sched_boost_active;
 
+#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+static int dynamic_stune_boost;
+module_param(dynamic_stune_boost, uint, 0644);
+static bool stune_boost_active;
+#endif /* CONFIG_DYNAMIC_STUNE_BOOST */
+
 static struct delayed_work input_boost_rem;
 static u64 last_input_time;
 #define MIN_INPUT_INTERVAL (150 * USEC_PER_MSEC)

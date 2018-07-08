@@ -664,6 +664,7 @@ void __pm_stay_awake(struct wakeup_source *ws)
 }
 EXPORT_SYMBOL_GPL(__pm_stay_awake);
 
+
 /**
  * pm_stay_awake - Notify the PM core that a wakeup event is being processed.
  * @dev: Device the wakeup event is related to.
