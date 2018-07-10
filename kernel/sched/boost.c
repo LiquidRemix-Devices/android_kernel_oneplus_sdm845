@@ -107,6 +107,10 @@ enum sched_boost_policy sched_boost_policy(void)
 	return boost_policy;
 }
 
+#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+static int boost_slot;
+#endif // CONFIG_DYNAMIC_STUNE_BOOST
+
 static bool verify_boost_params(int old_val, int new_val)
 {
 	/*
