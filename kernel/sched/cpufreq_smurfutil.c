@@ -1188,7 +1188,7 @@ static int smugov_init(struct cpufreq_policy *policy)
 	tunables->gold_suspend_max_freq = DEFAULT_SUSPEND_MAX_FREQ_GOLD;
 	tunables->suspend_capacity_factor = DEFAULT_SUSPEND_CAPACITY_FACTOR;
 
-	if (cpu < 2){
+	if (cpu < 4){
 		tunables->rate_limit_us = RATE_LIMIT;
 		tunables->bit_shift1 = BIT_SHIFT_1;
 		tunables->bit_shift2 = BIT_SHIFT_2;

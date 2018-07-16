@@ -292,7 +292,7 @@ static unsigned int resolve_target_freq(struct cpufreq_policy *policy,
 static void get_target_capacity(unsigned int cpu, int index,
 					unsigned long *down_cap, unsigned long *up_cap)
 {
-	if (cpu < 2) {
+	if (cpu < 4) {
 		*down_cap = little_capacity[index][0];
 		*up_cap = little_capacity[index][1];
 	} else {
@@ -1027,7 +1027,7 @@ static void get_tunables_data(struct acgov_tunables *tunables,
 	}
 
 initialize:
-	if (cpu < 2)
+	if (cpu < 4)
 		tunables->up_rate_limit_us = UP_RATE_LIMIT_US;
 	else
 		tunables->up_rate_limit_us = UP_RATE_LIMIT_US_BIGC;

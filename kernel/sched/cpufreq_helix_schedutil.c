@@ -1066,7 +1066,7 @@ static int hxgov_init(struct cpufreq_policy *policy)
 	tunables->hispeed_load = DEFAULT_HISPEED_LOAD;
 	tunables->hispeed_freq = 1132800;
 
-	if (cpu < 2){
+	if (cpu < 4){
 		tunables->rate_limit_us = RATE_LIMIT;
 		tunables->bit_shift1 = BIT_SHIFT_1;
 		tunables->bit_shift2 = BIT_SHIFT_2;

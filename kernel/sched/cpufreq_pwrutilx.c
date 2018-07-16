@@ -194,7 +194,7 @@ static unsigned int get_next_freq(struct pwrgov_policy *sg_policy,
 
 	const bool display_on = is_display_on();
 	
-	if(policy->cpu < 2) {
+	if(policy->cpu < 4) {
 		if(display_on)
 			freq = (freq + (freq >> 2)) * util / max;
 		else

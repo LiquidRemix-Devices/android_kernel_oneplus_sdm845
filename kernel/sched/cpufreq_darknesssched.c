@@ -254,7 +254,7 @@ static unsigned int resolve_target_freq(struct cpufreq_policy *policy,
 		return 0;
 
 	table = policy->freq_table;
-	if (policy->cpu < 2) {
+	if (policy->cpu < 4) {
 		for (i = 0; (table[i].frequency != CPUFREQ_TABLE_END); i++) {
 			if (table[i].frequency == CPUFREQ_ENTRY_INVALID
 				|| i >= LITTLE_NFREQS)
