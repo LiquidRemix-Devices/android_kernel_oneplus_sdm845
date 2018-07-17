@@ -1,5 +1,5 @@
 /*
- * drivers/param_read_write/param_read_write.c 
+ * drivers/param_read_write/param_read_write.c
  * Fake param_read_write Avengers theme
  * Made by pappschlumpf (Erik Müller)
  */
