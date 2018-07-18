@@ -18,10 +18,10 @@ export CLANG_TRIPLE=aarch64-linux-gnu-
 export CROSS_COMPILE=${HOME}/android/Toolchains/aarch64-linux-android-4.9/bin/aarch64-linux-android-
 export CROSS_COMPILE_ARM32=${HOME}/android/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-
 export KBUILD_COMPILER_STRING=$(~/android/Toolchains/clang/clang-r328903/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
-DEFCONFIG="smurf_defconfig"
+DEFCONFIG="enchilada_defconfig"
 
 # Kernel Details
-VER=".1.5.0"
+VER=".1.0.0"
 
 # Paths
 KERNEL_DIR=`pwd`

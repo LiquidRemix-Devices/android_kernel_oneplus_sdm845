@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 4.9.65 Kernel Configuration
+# Linux/arm64 4.9.115 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -47,7 +47,7 @@ CONFIG_SWEEP2SLEEP=y
 CONFIG_INIT_ENV_ARG_LIMIT=32
 CONFIG_CROSS_COMPILE=""
 # CONFIG_COMPILE_TEST is not set
-CONFIG_LOCALVERSION=""
+CONFIG_LOCALVERSION="-LR-OnePlus6-Enchilada-"
 # CONFIG_LOCALVERSION_AUTO is not set
 CONFIG_DEFAULT_HOSTNAME="(none)"
 CONFIG_SWAP=y
