@@ -39,8 +39,6 @@
 #include "codecs/wcd934x/wcd934x-mbhc.h"
 #include "codecs/wsa881x.h"
 
-#define VENDOR_EDIT 1
-
 #define DRV_NAME "sdm845-asoc-snd"
 
 #define __CHIPSET__ "SDM845 "
@@ -3925,7 +3923,7 @@ static void *def_tavil_mbhc_cal(void)
 		return NULL;
 
 #define S(X, Y) ((WCD_MBHC_CAL_PLUG_TYPE_PTR(tavil_wcd_cal)->X) = (Y))
-#ifndef VENDOR_EDIT
+#if 0
 /*wangdongdong@AudioDrv,2018-06-14,avoid JBL lock device not to enter standby*/
 	S(v_hs_max, 1600);
 #else
