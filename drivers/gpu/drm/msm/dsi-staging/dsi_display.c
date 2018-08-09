@@ -38,10 +38,6 @@
 
 #include <linux/msm_drm_notify.h>
 #include <linux/notifier.h>
-#include <linux/lcd_notify.h>
-#ifdef CONFIG_STATE_NOTIFIER
-#include <linux/state_notifier.h>
-#endif
 
 int backlight_min = 0;
 module_param(backlight_min, int, 0644);
@@ -7180,32 +7176,3 @@ MODULE_PARM_DESC(dsi_display1,
 	"msm_drm.dsi_display1=<display node>:<configX> where <display node> is 'secondary dsi display node name' and <configX> where x represents index in the topology list");
 module_init(dsi_display_register);
 module_exit(dsi_display_unregister);
-
-static int msm_drm_buffer_state_change(struct notifier_block *nb,
-        unsigned long val, void *data)
-{
-        int blank;
-        struct msm_drm_notifier *evdata = data;
-
-        if (!evdata || (evdata->id != 0))
-                return 0;
-
-        blank = *(int *)evdata->data;
-
-        switch (blank) {
-        case MSM_DRM_BLANK_POWERDOWN:
-		lcd_notifier_call_chain(LCD_EVENT_OFF_END, NULL);
-		#ifdef CONFIG_STATE_NOTIFIER
-		state_suspend();
-		#endif
-                break;
-        case MSM_DRM_BLANK_UNBLANK:
-		lcd_notifier_call_chain(LCD_EVENT_ON_START, NULL);
-		#ifdef CONFIG_STATE_NOTIFIER
-		state_resume();
-		#endif
-                break;
-        default:
-                break;
-        }
-}
