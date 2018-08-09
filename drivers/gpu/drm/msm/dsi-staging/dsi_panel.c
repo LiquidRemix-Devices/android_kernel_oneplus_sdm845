@@ -509,9 +509,9 @@ static int dsi_panel_power_on(struct dsi_panel *panel)
 
     mdss_dsi_disp_vci_en(panel, 1);
     display_on = true;
-    lcd_notifier_call_chain(LCD_EVENT_OFF_END, NULL);
+    lcd_notifier_call_chain(LCD_EVENT_ON_START, NULL);
     #ifdef CONFIG_STATE_NOTIFIER
-    state_suspend();
+    state_resume();
     #endif
     usleep_range(10000, 10000);
 
@@ -572,9 +572,9 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 	if (rc)
 		pr_err("[%s] failed to enable vregs, rc=%d\n", panel->name, rc);
     mdss_dsi_disp_poc_en(panel, 0);
-    lcd_notifier_call_chain(LCD_EVENT_ON_START, NULL);
+    lcd_notifier_call_chain(LCD_EVENT_OFF_END, NULL);
     #ifdef CONFIG_STATE_NOTIFIER
-    state_resume();
+    state_suspend();
     #endif
     display_on = false;
 	return rc;
