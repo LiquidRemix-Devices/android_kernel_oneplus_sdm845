@@ -16,11 +16,15 @@
 #ifdef CONFIG_CPU_INPUT_BOOST
 void cpu_input_boost_kick(void);
 void cpu_input_boost_kick_max(unsigned int duration_ms);
+void cluster_input_boost_kick_max(unsigned int duration_ms, int cpu);
 #else
 static inline void cpu_input_boost_kick(void)
 {
 }
 static inline void cpu_input_boost_kick_max(unsigned int duration_ms)
+{
+}
+void core_input_boost_kick_max(unsigned int duration_ms, unsigned int cpu)
 {
 }
 #endif

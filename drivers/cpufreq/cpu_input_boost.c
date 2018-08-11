@@ -53,6 +53,7 @@ struct boost_drv {
 	atomic_t max_boost_dur;
 	spinlock_t lock;
 	u32 state;
+	int cpu;
 };
 
 static struct boost_drv *boost_drv_g;
@@ -138,7 +139,7 @@ void cpu_input_boost_kick(void)
 }
 
 static void __cpu_input_boost_kick_max(struct boost_drv *b,
-	unsigned int duration_ms)
+	unsigned int duration_ms, unsigned int cpu)
 {
 	unsigned long new_expires;
 
@@ -150,6 +151,7 @@ static void __cpu_input_boost_kick_max(struct boost_drv *b,
 		return;
 	}
 	b->max_boost_expires = new_expires;
+	b->cpu = cpu;
 	spin_unlock(&b->lock);
 
 	atomic_set(&b->max_boost_dur, duration_ms);
@@ -162,8 +164,18 @@ void cpu_input_boost_kick_max(unsigned int duration_ms)
 
 	if (!b)
 		return;
+	
+	__cpu_input_boost_kick_max(b, duration_ms, 0);
+}
 
-	__cpu_input_boost_kick_max(b, duration_ms);
+void cluster_input_boost_kick_max(unsigned int duration_ms, int cpu)
+{
+	struct boost_drv *b = boost_drv_g;
+
+	if (!b)
+		return;
+	
+	__cpu_input_boost_kick_max(b, duration_ms, cpu);
 }
 
 static void input_boost_worker(struct work_struct *work)
@@ -236,6 +248,7 @@ static int cpu_notifier_cb(struct notifier_block *nb,
 	struct boost_drv *b = container_of(nb, typeof(*b), cpu_notif);
 	struct cpufreq_policy *policy = data;
 	u32 boost_freq, min_freq, state;
+	bool do_boost = false;
 
 	if (action != CPUFREQ_ADJUST)
 		return NOTIFY_OK;
@@ -243,9 +256,13 @@ static int cpu_notifier_cb(struct notifier_block *nb,
 	state = get_boost_state(b);
 
 	/* Boost CPU to max frequency for max boost */
+	
 	if (state & MAX_BOOST) {
-		policy->min = policy->max;
-		return NOTIFY_OK;
+		if (b->cpu = policy->cpu) {
+			policy->min = policy->max;
+			b->cpu = 9;
+			return NOTIFY_OK;
+		}
 	}
 
 	/*
@@ -277,7 +294,7 @@ static int msm_drm_notifier_cb(struct notifier_block *nb,
 	/* Boost when the screen turns on and unboost when it turns off */
 	if (*blank == MSM_DRM_BLANK_UNBLANK_CUST) {
 		set_boost_bit(b, SCREEN_AWAKE);
-		__cpu_input_boost_kick_max(b, CONFIG_WAKE_BOOST_DURATION_MS);
+		__cpu_input_boost_kick_max(b, CONFIG_WAKE_BOOST_DURATION_MS, 0);
 	} else {
 		clear_boost_bit(b, SCREEN_AWAKE);
 		unboost_all_cpus(b);
