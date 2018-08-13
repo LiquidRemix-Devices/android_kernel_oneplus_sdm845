@@ -21,7 +21,7 @@ export KBUILD_COMPILER_STRING=$(~/android/Toolchains/clang/clang-r328903/bin/cla
 DEFCONFIG="smurf_defconfig"
 
 # Kernel Details
-VER=".1.5.3"
+VER=".1.5.4"
 
 # Paths
 KERNEL_DIR=`pwd`
@@ -63,6 +63,10 @@ function make_boot {
 		cp -vr ~/android/op6/out/arch/arm64/boot/Image.gz-dtb ~/android/AnyKernel2/zImage
 }
 
+function move_boot {
+		mv ~/android/AnyKernel2/zImage ~/android/AnyKernel2/oos/zImage
+		mv ~/android/AnyKernel2/modules ~/android/AnyKernel2/oos/modules
+}
 
 function make_zip {
 		cd ~/android/AnyKernel2
@@ -124,6 +128,7 @@ case "$dchoice" in
 		make_dtb
 		make_modules
 		make_boot
+		move_boot
 		make_zip
 		break
 		;;
