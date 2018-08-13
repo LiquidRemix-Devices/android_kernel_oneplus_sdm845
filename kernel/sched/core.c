@@ -77,6 +77,7 @@
 #include <linux/prefetch.h>
 #include <linux/irq.h>
 #include <linux/cpu_input_boost.h>
+#include <linux/devfreq_boost.h>
 
 #include <asm/switch_to.h>
 #include <asm/tlb.h>
@@ -2793,6 +2794,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 	put_cpu();
 	if (is_zygote_pid(p->pid)) {
 		cluster_input_boost_kick_max(1250, cpu);
+		devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, 1250);
 	}
 	return 0;
 }
