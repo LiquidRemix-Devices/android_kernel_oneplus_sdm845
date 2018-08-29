@@ -21,7 +21,7 @@ export KBUILD_COMPILER_STRING=$(~/android/Toolchains/clang/clang-r328903/bin/cla
 DEFCONFIG="smurf_defconfig"
 
 # Kernel Details
-VER=".1.5.7"
+VER=".1.5.7.custom"
 
 # Paths
 KERNEL_DIR=`pwd`
@@ -51,12 +51,7 @@ function make_kernel {
 }
 
 function make_modules {
-		rm `echo $MODULES_DIR"/*"`
 		find $KERNEL_DIR -name '*.ko' -exec cp -v {} $MODULES_DIR \;
-}
-
-function make_dtb {
-		$REPACK_DIR/tools/dtbToolCM -2 -o $REPACK_DIR/$DTBIMAGE -s 2048 -p scripts/dtc/ arch/arm64/boot/
 }
 
 function make_boot {
@@ -64,8 +59,8 @@ function make_boot {
 }
 
 function move_boot {
-		mv ~/android/AnyKernel2/zImage ~/android/AnyKernel2/oos/zImage
-		mv ~/android/AnyKernel2/modules ~/android/AnyKernel2/oos/modules
+		mv ~/android/AnyKernel2/zImage ~/android/AnyKernel2/custom/zImage
+		mv ~/android/AnyKernel2/modules ~/android/AnyKernel2/custom/modules
 }
 
 function make_zip {
@@ -125,7 +120,6 @@ do
 case "$dchoice" in
 	y|Y )
 		make_kernel
-		make_dtb
 		make_modules
 		make_boot
 		move_boot

@@ -27,7 +27,6 @@
 #include <linux/completion.h>
 #include <sound/soc.h>
 #include <sound/jack.h>
-#include "pdata.h"
 #include "wcd-mbhc-adc.h"
 #include "wcd-mbhc-v2.h"
 

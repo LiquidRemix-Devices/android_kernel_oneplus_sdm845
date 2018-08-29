@@ -1078,12 +1078,7 @@ static int dsi_display_link_clk_force_update(void *client)
 	struct dsi_clk_mngr *mngr;
 	struct dsi_link_clks *l_clks;
 
-	if (!client) {
-		pr_err("%s: Invalid arg\n", __func__);
-		return -EINVAL;
-	}
 	mngr = c->mngr;
-
 	mutex_lock(&mngr->clk_mutex);
 
 	l_clks = mngr->link_clks;

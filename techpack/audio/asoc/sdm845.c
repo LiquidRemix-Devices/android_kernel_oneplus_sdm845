@@ -4720,6 +4720,7 @@ static int msm_mi2s_snd_startup(struct snd_pcm_substream *substream)
 				__func__, ret);
 			goto clean_up;
 		}
+
 		ret = snd_soc_dai_set_fmt(cpu_dai, fmt);
 		if (ret < 0) {
 			pr_err("%s: set fmt cpu dai failed for MI2S (%d), err:%d\n",

@@ -888,7 +888,7 @@ static int dsi_ctrl_copy_and_pad_cmd(struct dsi_ctrl *dsi_ctrl,
 	len = packet->size;
 	len += 0x3; len &= ~0x03; /* Align to 32 bits */
 
-	buf = devm_kzalloc(&dsi_ctrl->pdev->dev, len, GFP_KERNEL);
+	buf = devm_kzalloc(&dsi_ctrl->pdev->dev, len * sizeof(u8), GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
 
@@ -1107,8 +1107,6 @@ static int dsi_message_tx(struct dsi_ctrl *dsi_ctrl,
 			true : false;
 
 		cmdbuf = (u8 *)(dsi_ctrl->vaddr);
-        if (cmdbuf == NULL)
-            goto error;
 
 		for (cnt = 0; cnt < length; cnt++)
 			cmdbuf[dsi_ctrl->cmd_len + cnt] = buffer[cnt];
