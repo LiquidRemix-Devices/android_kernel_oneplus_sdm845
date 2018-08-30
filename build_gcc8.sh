@@ -21,7 +21,7 @@ export CROSS_COMPILE_ARM32=${HOME}/android/Toolchains/arm-linux-androideabi-4.9/
 DEFCONFIG="smurf_defconfig"
 
 # Kernel Details
-VER=".1.6.0.gcc8.custom."
+VER=".1.6.1.gcc8.custom."
 
 # Paths
 KERNEL_DIR=`pwd`
