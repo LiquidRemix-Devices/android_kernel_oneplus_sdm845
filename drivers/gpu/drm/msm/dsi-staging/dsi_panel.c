@@ -56,7 +56,7 @@ enum dsi_dsc_ratio_type {
 
 bool display_on = true;
 
-bool is_display_on(void)
+bool is_display_on()
 {
 	return display_on;
 }
