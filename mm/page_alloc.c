@@ -3821,7 +3821,7 @@ retry:
 #ifdef CONFIG_ANDROID_SIMPLE_LMK
 	simple_lmk_mem_reclaim();
 	if (gfp_mask & __GFP_NORETRY)
-		goto noretry;
+		goto nopage;
 	goto retry;
 #endif
 
