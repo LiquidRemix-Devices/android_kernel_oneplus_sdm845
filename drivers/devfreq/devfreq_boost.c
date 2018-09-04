@@ -12,9 +12,9 @@
  */
 
 #define pr_fmt(fmt) "devfreq_boost: " fmt
-
 #include <linux/devfreq_boost.h>
 #include <linux/msm_drm_notify.h>
+#include <linux/fb.h>
 #include <linux/input.h>
 
 struct df_boost_drv {
