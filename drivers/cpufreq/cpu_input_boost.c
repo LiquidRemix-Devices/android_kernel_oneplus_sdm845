@@ -74,14 +74,6 @@ static u32 get_min_freq(struct boost_drv *b, u32 cpu)
 	return CONFIG_REMOVE_INPUT_BOOST_FREQ_PERF;
 }
 
-static u32 get_min_freq(struct boost_drv *b, u32 cpu)
-{
-	if (cpumask_test_cpu(cpu, cpu_lp_mask))
-		return CONFIG_REMOVE_INPUT_BOOST_FREQ_LP;
-
-	return CONFIG_REMOVE_INPUT_BOOST_FREQ_PERF;
-}
-
 static u32 get_boost_state(struct boost_drv *b)
 {
 	u32 state;
@@ -295,6 +287,7 @@ static int msm_drm_notifier_cb(struct notifier_block *nb,
 	if (*blank == MSM_DRM_BLANK_UNBLANK_CUST) {
 		set_boost_bit(b, SCREEN_AWAKE);
 		__cpu_input_boost_kick_max(b, CONFIG_WAKE_BOOST_DURATION_MS, 0);
+
 	} else {
 		clear_boost_bit(b, SCREEN_AWAKE);
 		unboost_all_cpus(b);
