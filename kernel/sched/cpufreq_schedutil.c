@@ -18,7 +18,6 @@
 #include <linux/sched/sysctl.h>
 #include "sched.h"
 #include "tune.h"
-#include <../drivers/oneplus/coretech/opchain/opchain_helper.h>
 
 #define SUGOV_KTHREAD_PRIORITY	50
 
@@ -110,11 +109,9 @@ static void sugov_update_commit(struct sugov_policy *sg_policy, u64 time,
 				unsigned int next_freq)
 {
 	struct cpufreq_policy *policy = sg_policy->policy;
-	/*yankelong add ,modify judging condition*/
-	if (policy->cur == next_freq) {
-		sg_policy->next_freq = next_freq;
+	if (sg_policy->next_freq == next_freq)
 		return;
-	}
+
 	sg_policy->next_freq = next_freq;
 	sg_policy->last_freq_update_time = time;
 
@@ -160,10 +157,7 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 	struct cpufreq_policy *policy = sg_policy->policy;
 	unsigned int freq = arch_scale_freq_invariant() ?
 				policy->cpuinfo.max_freq : policy->cur;
-	if (!policy->cpu || !opc_fps_check(0))
-		freq = (freq + (freq >> 2)) * util / max;
-	else
-		freq = freq * util / max + 1;
+	freq = (freq + (freq >> 2)) * util / max;
 	trace_sugov_next_freq(policy->cpu, util, max, freq);
 
 	if (freq == sg_policy->cached_raw_freq && sg_policy->next_freq != UINT_MAX)
