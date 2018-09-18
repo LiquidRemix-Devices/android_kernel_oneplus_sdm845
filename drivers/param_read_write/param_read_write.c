@@ -19,6 +19,7 @@
 #include <linux/miscdevice.h>
 #include <linux/proc_fs.h>
 #include <linux/param_rw.h>
+#include <linux/moduleparam.h>
 
 
 #define PARAM_PARTITION "/dev/block/bootdevice/by-name/param"
@@ -37,6 +38,9 @@ typedef struct{
 static DEFINE_MUTEX(param_lock);
 static bool param_init_done = 0;
 static param_ram_zone_t param_ram_zone;
+
+static unsigned int cust_flag = 0;
+module_param(cust_flag, uint, 0644);
 
 static int write_param_partition(const char *buf, unsigned long count,
             loff_t offset)
