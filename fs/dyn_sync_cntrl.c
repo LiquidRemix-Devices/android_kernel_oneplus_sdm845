@@ -15,7 +15,7 @@
 #include <linux/reboot.h>
 #include <linux/writeback.h>
 #include <linux/dyn_sync_cntrl.h>
-#include <linux/lcd_notify.h>
+#include <linux/msm_drm_notify.h>
 
 // fsync_mutex protects dyn_fsync_active during suspend / late resume transitions
 static DEFINE_MUTEX(fsync_mutex);
@@ -26,7 +26,7 @@ static DEFINE_MUTEX(fsync_mutex);
 bool suspend_active __read_mostly = false;
 bool dyn_fsync_active __read_mostly = DYN_FSYNC_ACTIVE_DEFAULT;
 
-static struct notifier_block lcd_notif;
+struct notifier_block msm_drm_notif;
 
 extern void sync_filesystems(int wait);
 
@@ -113,32 +113,30 @@ static int dyn_fsync_notify_sys(struct notifier_block *this, unsigned long code,
 	return NOTIFY_DONE;
 }
 
-static int lcd_notifier_callback(struct notifier_block *this,
-								unsigned long event, void *data)
+static int msm_drm_notifier_cb(struct notifier_block *nb,
+	unsigned long action, void *data)
 {
-	switch (event) 
-	{
-		case LCD_EVENT_OFF_START:
-			mutex_lock(&fsync_mutex);
-			
-			suspend_active = false;
+	struct msm_drm_notifier *evdata = data;
+	int *blank = evdata->data;
 
-			if (dyn_fsync_active) 
-			{
-				dyn_fsync_force_flush();
-			}
+	
+	if (action != MSM_DRM_EARLY_EVENT_BLANK) {
+		mutex_lock(&fsync_mutex);
 			
-			mutex_unlock(&fsync_mutex);
-			break;
+		suspend_active = false;
+
+		if (dyn_fsync_active) 
+		{
+			dyn_fsync_force_flush();
+		}
+		
+		mutex_unlock(&fsync_mutex);
+	}
 			
-		case LCD_EVENT_ON_END:
-			mutex_lock(&fsync_mutex);
-			suspend_active = true;
-			mutex_unlock(&fsync_mutex);
-			break;
-			
-		default:
-			break;
+	if (*blank == MSM_DRM_BLANK_UNBLANK_CUST) {
+		mutex_lock(&fsync_mutex);
+		suspend_active = true;
+		mutex_unlock(&fsync_mutex);
 	}
 
 	return 0;
@@ -189,6 +187,7 @@ static struct kobject *dyn_fsync_kobj;
 static int dyn_fsync_init(void)
 {
 	int sysfs_result;
+	int ret;
 
 	register_reboot_notifier(&dyn_fsync_notifier);
 	
@@ -212,10 +211,11 @@ static int dyn_fsync_init(void)
 		kobject_put(dyn_fsync_kobj);
 	}
 
-	lcd_notif.notifier_call = lcd_notifier_callback;
-	if (lcd_register_client(&lcd_notif) != 0) 
+	msm_drm_notif.notifier_call = msm_drm_notifier_cb;
+	ret = msm_drm_register_client(&msm_drm_notif);
+	if (ret) 
 	{
-		pr_err("%s: Failed to register lcd callback\n", __func__);
+		pr_err("%s: Failed to register msm_drm_notifier callback\n", __func__);
 
 		unregister_reboot_notifier(&dyn_fsync_notifier);
 
@@ -244,7 +244,7 @@ static void dyn_fsync_exit(void)
 	if (dyn_fsync_kobj != NULL)
 		kobject_put(dyn_fsync_kobj);
 	
-	lcd_unregister_client(&lcd_notif);
+	msm_drm_unregister_client(&msm_drm_notif);
 		
 	pr_info("%s dynamic fsync unregistration complete\n", __FUNCTION__);
 }
