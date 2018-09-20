@@ -25,7 +25,7 @@
 #include <linux/project_info.h>
 #include <linux/pm_wakeup.h>
 #include "../sde/sde_trace.h"
-#include <linux/lcd_notify.h>
+
 #ifdef CONFIG_STATE_NOTIFIER
 #include <linux/state_notifier.h>
 #endif
@@ -507,7 +507,6 @@ static int dsi_panel_power_on(struct dsi_panel *panel)
 	}
 
     mdss_dsi_disp_vci_en(panel, 1);
-    lcd_notifier_call_chain(LCD_EVENT_ON_START, NULL);
     #ifdef CONFIG_STATE_NOTIFIER
     state_resume();
     #endif
@@ -566,7 +565,6 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 	if (rc)
 		pr_err("[%s] failed to enable vregs, rc=%d\n", panel->name, rc);
     mdss_dsi_disp_poc_en(panel, 0);
-    lcd_notifier_call_chain(LCD_EVENT_OFF_END, NULL);
     #ifdef CONFIG_STATE_NOTIFIER
     state_suspend();
     #endif
