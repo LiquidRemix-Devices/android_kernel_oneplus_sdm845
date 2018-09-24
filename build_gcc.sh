@@ -15,13 +15,13 @@ DTBIMAGE="dtb"
 #export CLANG_PATH=~/android/Toolchains/clang/clang-r328903/bin/
 #export PATH=${CLANG_PATH}:${PATH}
 #export CLANG_TRIPLE=aarch64-linux-gnu-
-export CROSS_COMPILE=${HOME}/android/Toolchains/GCC8/bin/aarch64-opt-linux-android-
+export CROSS_COMPILE=${HOME}/android/Toolchains/Linaro7.3/bin/aarch64-opt-linux-android-
 export CROSS_COMPILE_ARM32=${HOME}/android/Toolchains/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-
 #export KBUILD_COMPILER_STRING=$(~/android/Toolchains/clang/clang-r328903/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
 DEFCONFIG="smurf_defconfig"
 
 # Kernel Details
-VER=".2.0.3.gcc8"
+VER=".2.0.3.linaro"
 
 # Paths
 KERNEL_DIR=`pwd`
@@ -44,7 +44,7 @@ function clean_all {
 }
 
 function make_kernel {
-	      cp ~/android/op6/Makefile.gcc8 ~/android/op6/Makefile
+	      cp ~/android/op6/Makefile.gcc ~/android/op6/Makefile
 	      echo
               make ARCH=arm64 O=out $DEFCONFIG
               make ARCH=arm64 O=out $THREAD
