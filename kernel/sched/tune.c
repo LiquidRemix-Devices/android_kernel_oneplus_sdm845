@@ -465,6 +465,11 @@ schedtune_cpu_update(int cpu)
 	/* The root boost group is always active */
 	boost_max = bg->group[0].boost;
 	for (idx = 0; idx < BOOSTGROUPS_COUNT; ++idx) {
+
+		/* Ignore non boostgroups not mapping a cgroup */
+		if (!bg->group[idx].valid)
+			continue;
+
 		/*
 		 * A boost group affects a CPU only if it has
 		 * RUNNABLE tasks on that CPU
