@@ -143,7 +143,7 @@ const_debug unsigned int sysctl_sched_migration_cost = 500000UL;
  * distribution.
  * (default: 10msec)
  */
-unsigned int __read_mostly sysctl_sched_shares_window = 10000000UL;
+unsigned int __read_mostly sysctl_sched_shares_window = 7500000UL;
 
 #ifdef CONFIG_CFS_BANDWIDTH
 /*
