@@ -191,14 +191,8 @@ static unsigned int get_next_freq(struct smugov_policy *sg_policy,
 				policy->cpuinfo.max_freq : policy->cur;
 	unsigned int capacity_factor, silver_max_freq, gold_max_freq;
 
-	if(state_suspended) {
-		capacity_factor = sg_policy->tunables->suspend_capacity_factor;
-		silver_max_freq = sg_policy->tunables->silver_suspend_max_freq;
-		gold_max_freq = sg_policy->tunables->gold_suspend_max_freq;
-		max = max * (capacity_factor + 1) / capacity_factor;
-	}
-
 	unsigned long load = 100 * util / max;
+
 	if(load < tunables->target_load1){
 		freq = (freq + (freq >> tunables->bit_shift1)) * util / max;
 	} else if (load >= tunables->target_load1 && load < tunables->target_load2){
@@ -209,18 +203,29 @@ static unsigned int get_next_freq(struct smugov_policy *sg_policy,
 
 	switch(policy->cpu){
 	case 0:
+		if(state_suspended &&  silver_max_freq > 0 && silver_max_freq < freq) {
+			silver_max_freq = sg_policy->tunables->silver_suspend_max_freq;
+			return silver_max_freq;
+		}
+		break;
 	case 1:
 	case 2:
 	case 3:
-		if(state_suspended &&  silver_max_freq > 0 && silver_max_freq < freq) 
-			return silver_max_freq;
+		if(state_suspended)
+			return policy->min;
 		break;
+		
 	case 4:
+		if(state_suspended && gold_max_freq > 0 && gold_max_freq < freq) {
+			gold_max_freq = sg_policy->tunables->gold_suspend_max_freq;
+			return gold_max_freq; 
+		}
+		break;
 	case 5:
 	case 6:
 	case 7:
-		if(state_suspended && gold_max_freq > 0 && gold_max_freq < freq)
-			return gold_max_freq;
+		if(state_suspended)
+			return policy->min;
 		break;
 	default:
 		BUG();
