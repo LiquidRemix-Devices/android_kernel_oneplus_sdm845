@@ -2268,6 +2268,9 @@ struct task_struct {
 	unsigned long	task_state_change;
 #endif
 	int pagefault_disabled;
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
+	bool lmk_sigkill_sent;
+#endif
 #ifdef CONFIG_MMU
 	struct task_struct *oom_reaper_list;
 #endif
