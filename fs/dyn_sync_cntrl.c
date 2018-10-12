@@ -212,6 +212,7 @@ static int dyn_fsync_init(void)
 	}
 
 	msm_drm_notif.notifier_call = msm_drm_notifier_cb;
+	msm_drm_notif.priority = INT_MAX;
 	ret = msm_drm_register_client(&msm_drm_notif);
 	if (ret) 
 	{
