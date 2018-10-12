@@ -299,6 +299,7 @@ static int maple_init_queue(struct request_queue *q, struct elevator_type *e)
 	eq->elevator_data = mdata;
 
 	mdata->msm_drm_notif.notifier_call = msm_drm_notifier_cb;
+	mdata->msm_drm_notif.priority = INT_MAX;
 	msm_drm_register_client(&mdata->msm_drm_notif);
 
 	/* Initialize fifo lists */
