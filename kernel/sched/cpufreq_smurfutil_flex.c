@@ -91,10 +91,9 @@ struct smugov_cpu {
 	struct update_util_data update_util;
 	struct smugov_policy *sg_policy;
 
-	unsigned int cached_raw_freq;
 	bool iowait_boost_pending;
-	unsigned long iowait_boost;
-	unsigned long iowait_boost_max;
+	unsigned int iowait_boost;
+	unsigned int iowait_boost_max;
 	u64 last_update;
 
 	struct sched_walt_cpu_load walt_load;
@@ -139,7 +138,6 @@ static void smugov_update_commit(struct smugov_policy *sg_policy, u64 time,
 				unsigned int next_freq)
 {
 	struct cpufreq_policy *policy = sg_policy->policy;
-
 	if (sg_policy->next_freq == next_freq)
 		return;
 
@@ -391,7 +389,7 @@ static void smugov_calc_avg_cap(struct smugov_policy *sg_policy, u64 curr_ws,
 	if (unlikely(!sysctl_sched_use_walt_cpu_util))
 		return;
 
-	WARN_ON(curr_ws < last_ws);
+	BUG_ON(curr_ws < last_ws);
 	if (curr_ws <= last_ws)
 		return;
 
@@ -526,7 +524,6 @@ static unsigned int smugov_next_freq_shared(struct smugov_cpu *sg_cpu, u64 time)
 {
 	struct smugov_policy *sg_policy = sg_cpu->sg_policy;
 	struct cpufreq_policy *policy = sg_policy->policy;
-	u64 last_freq_update_time = sg_policy->last_freq_update_time;
 	unsigned long util = 0, max = 1;
 	unsigned int cap_max = SCHED_CAPACITY_SCALE;
 	unsigned int cap_min = 0;
@@ -644,7 +641,7 @@ static void smugov_work(struct kthread_work *work)
 	mutex_lock(&sg_policy->work_lock);
 	raw_spin_lock_irqsave(&sg_policy->update_lock, flags);
 	smugov_track_cycles(sg_policy, sg_policy->policy->cur,
-			   ktime_get_ns());
+			   sched_ktime_clock());
 	raw_spin_unlock_irqrestore(&sg_policy->update_lock, flags);
 	__cpufreq_driver_target(sg_policy->policy, sg_policy->next_freq,
 				CPUFREQ_RELATION_L);
