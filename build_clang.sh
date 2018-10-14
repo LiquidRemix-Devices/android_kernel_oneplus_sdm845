@@ -15,9 +15,9 @@ DTBIMAGE="dtb"
 export CLANG_PATH=~/android/Toolchains/clang/clang-r328903/bin/
 export PATH=${CLANG_PATH}:${PATH}
 export CLANG_TRIPLE=aarch64-linux-gnu-
-export CROSS_COMPILE=${HOME}/android/Toolchains/aarch64-linux-android-4.9/bin/aarch64-linux-android-
-export CROSS_COMPILE_ARM32=${HOME}/android/Toolchains/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-
-export KBUILD_COMPILER_STRING=$(~/android/Toolchains/clang/clang-r328903/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
+export CROSS_COMPILE=${HOME}/android/Toolchains/aarch64-linux-android-4.9/bin/aarch64-linux-android- CC=clang CXX=clang++
+export CROSS_COMPILE_ARM32=${HOME}/android/Toolchains/arm-linux-androideabi-4.9/bin/arm-linux-androideabi- 
+export KBUILD_COMPILER_STRING=$(~/android/Toolchains/clang/clang-r339409b/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
 DEFCONFIG="smurf_defconfig"
 
 # Kernel Details
@@ -34,8 +34,8 @@ ZIMAGE_DIR="${HOME}/android/op6/arch/arm64/boot/"
 # Functions
 function clean_all {
 		rm -rf $MODULES_DIR/*
-		cd ~/android/op6/out/kernel
-		rm -rf $DTBIMAGE
+		cd ~/android/op6/out/
+		rm -rf *
 		#git reset --hard > /dev/null 2>&1
 		#git clean -f -d > /dev/null 2>&1
 		cd $KERNEL_DIR
@@ -46,8 +46,8 @@ function clean_all {
 function make_kernel {
 		cp ~/android/op6/Makefile.clang ~/android/op6/Makefile
 		echo
-		make CC=clang O=out $DEFCONFIG
-		make CC=clang O=out $THREAD
+		make CC=clang CXX=clang++ O=out $DEFCONFIG
+		make CC=clang CXX=clang++ O=out $THREAD
 
 }
 
