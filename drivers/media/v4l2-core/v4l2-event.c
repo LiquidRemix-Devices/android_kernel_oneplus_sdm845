@@ -240,7 +240,7 @@ int v4l2_event_subscribe(struct v4l2_fh *fh,
 	if (sev->ops && sev->ops->add) {
 		ret = sev->ops->add(sev, elems);
 		if (ret) {
-			kfree(sev);
+			kvfree(sev);
 			goto out_unlock;
 		}
 	}
