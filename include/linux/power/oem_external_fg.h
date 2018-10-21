@@ -60,6 +60,8 @@ struct external_battery_gauge {
 	int (*fast_chg_started_status)(bool status);
 	bool (*get_fastchg_firmware_already_updated)(void);
 	int (*get_device_type)(void);
+	int (*get_battery_fcc) (void);
+	int (*get_battery_cycles) (void);
 };
 
 struct notify_dash_event {
