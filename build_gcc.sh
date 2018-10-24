@@ -21,7 +21,7 @@ export CROSS_COMPILE_ARM32=${HOME}/android/Toolchains/arm-linux-androideabi-8.2.
 DEFCONFIG="smurf_defconfig"
 
 # Kernel Details
-VER=".2.0.12.linaro"
+VER=".2.0.13.linaro"
 
 # Paths
 KERNEL_DIR=`pwd`
