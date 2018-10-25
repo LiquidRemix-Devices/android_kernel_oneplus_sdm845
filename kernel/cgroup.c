@@ -2969,7 +2969,6 @@ static ssize_t __cgroup_procs_write(struct kernfs_open_file *of, char *buf,
 	    !memcmp(cgrp->kn->name, "top-app", sizeof("top-app")) && !ret) {
 		cpu_input_boost_kick_max(500);
 		devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, 500);
-		pr_info("cgroup: Launcher boosted\n");
 	}
 
 	put_task_struct(tsk);
