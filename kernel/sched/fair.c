@@ -7261,7 +7261,6 @@ retry:
 		target_cpu = best_idle_cpu;
 		best_idle_cpu = -1;
 	}
-	
 	/*
 	 * For non latency sensitive tasks, cases B and C in the previous loop,
 	 * we pick the best IDLE CPU only if we was not able to find a target
