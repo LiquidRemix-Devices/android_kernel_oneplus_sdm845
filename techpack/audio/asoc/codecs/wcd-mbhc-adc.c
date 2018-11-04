@@ -877,8 +877,6 @@ enable_supply:
 	if (mbhc->mbhc_cb->mbhc_micbias_control)
 		wcd_mbhc_adc_update_fsm_source(mbhc, plug_type);
 exit:
-	if (plug_type == MBHC_PLUG_TYPE_HEADSET)
-		mbhc->micbias_enable = true;
 //opadd,multimediadrv,keep micbias open
 	if (plug_type == MBHC_PLUG_TYPE_HEADSET)
 		mbhc->micbias_enable = true;
