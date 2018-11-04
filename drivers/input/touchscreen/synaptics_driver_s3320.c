@@ -2089,7 +2089,7 @@ static irqreturn_t synaptics_irq_thread_fn(int irq, void *dev_id)
 	struct synaptics_ts_data *ts = (struct synaptics_ts_data *)dev_id;
     touch_disable(ts);
 	synaptics_ts_work_func(&ts->report_work);
- END:
+
 	pm_qos_update_request(&ts->pm_qos_req, PM_QOS_DEFAULT_VALUE);
 
 	return IRQ_HANDLED;
