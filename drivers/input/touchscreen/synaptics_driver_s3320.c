@@ -2067,6 +2067,8 @@ static void synaptics_ts_work_func(struct work_struct *work)
 
 
 END:
+	pm_qos_update_request(&ts->pm_qos_req, PM_QOS_DEFAULT_VALUE);
+
 	//ret = set_changer_bit(ts);
 	touch_enable(ts);
 EXIT:
@@ -2089,9 +2091,6 @@ static irqreturn_t synaptics_irq_thread_fn(int irq, void *dev_id)
 	struct synaptics_ts_data *ts = (struct synaptics_ts_data *)dev_id;
     touch_disable(ts);
 	synaptics_ts_work_func(&ts->report_work);
-
-	pm_qos_update_request(&ts->pm_qos_req, PM_QOS_DEFAULT_VALUE);
-
 	return IRQ_HANDLED;
 }
 #endif
@@ -6269,10 +6268,6 @@ static int synaptics_ts_probe(struct i2c_client *client, const struct i2c_device
 	}
 #endif
 	init_synaptics_proc();
-
-	pm_qos_add_request(&ts->pm_qos_req, PM_QOS_CPU_DMA_LATENCY,
-		PM_QOS_DEFAULT_VALUE);
-
 #ifdef WAKE_GESTURES
 	gl_ts = ts;
 
@@ -6309,6 +6304,9 @@ static int synaptics_ts_probe(struct i2c_client *client, const struct i2c_device
 		pr_warn("%s: sysfs_create_file failed for wake_gestures\n", __func__);
 	}
 #endif
+
+	pm_qos_add_request(&ts->pm_qos_req, PM_QOS_CPU_DMA_LATENCY,
+		PM_QOS_DEFAULT_VALUE);
 
 	TPDTM_DMESG("synaptics_ts_probe 3203: normal end\n");
 
@@ -6384,8 +6382,7 @@ static int synaptics_ts_remove(struct i2c_client *client)
 	input_unregister_device(ts->input_dev);
 	input_free_device(ts->input_dev);
 	kfree(ts);
-
-	tpd_power(ts, 0);
+	tpd_power(ts,0);
 
 	pm_qos_remove_request(&ts->pm_qos_req);
 
