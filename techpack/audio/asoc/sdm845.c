@@ -183,7 +183,6 @@ struct msm_asoc_wcd93xx_codec {
 static const char *const pin_states[] = {"sleep", "i2s-active",
 					 "tdm-active"};
 
-
 enum {
 	TDM_0 = 0,
 	TDM_1,
@@ -4063,7 +4062,6 @@ static void *def_tavil_mbhc_cal(void)
 	btn_high[5] = 600;
 	btn_high[6] = 600;
 	btn_high[7] = 600;
-
 	
 
 	return tavil_wcd_cal;
