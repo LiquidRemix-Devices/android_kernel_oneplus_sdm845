@@ -432,7 +432,6 @@ static struct clk_osm l3_clk = {
 static DEFINE_CLK_VOTER(l3_cluster0_vote_clk, l3_clk, 0);
 static DEFINE_CLK_VOTER(l3_cluster1_vote_clk, l3_clk, 0);
 static DEFINE_CLK_VOTER(l3_misc_vote_clk, l3_clk, 0);
-static DEFINE_CLK_VOTER(l3_gpu_vote_clk, l3_clk, 0);
 
 static struct clk_osm pwrcl_clk = {
 	.cluster_num = 1,
