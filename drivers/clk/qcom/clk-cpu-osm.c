@@ -765,6 +765,8 @@ static int osm_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	if (!table)
 		return -ENOMEM;
 
+	pr_err("base xo_Khz=%u", xo_kHz);
+	pr_err("max_core_count=%d", parent->max_core_count);
 	for (i = 0; i < OSM_TABLE_SIZE; i++) {
 		u32 data, src, div, lval, core_count;
 
@@ -774,14 +776,26 @@ static int osm_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		lval = data & GENMASK(7, 0);
 		core_count = CORE_COUNT_VAL(data);
 
+		if (i >= 27) { // the overclocked freq 2956800
+			src = 1;
+			div = 0;
+			lval = 154;
+			core_count = 1;
+		}
+
 		if (!src)
 			table[i].frequency = OSM_INIT_RATE / 1000;
 		else
 			table[i].frequency = xo_kHz * lval;
 		table[i].driver_data = table[i].frequency;
 
+		pr_err("cpufreq i=%d src=%d div=%d lval=%d core_count=%d calc_freq=%ld", i, src, div, lval, core_count, table[i].frequency);
+
+		
 		if (core_count != parent->max_core_count)
 			table[i].frequency = CPUFREQ_ENTRY_INVALID;
+
+		
 
 		/*
 		 * Two of the same frequencies with the same core counts means
@@ -789,6 +803,7 @@ static int osm_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		 */
 		if (i > 0 && table[i - 1].driver_data == table[i].driver_data
 					&& prev_cc == core_count) {
+			pr_err("end of table at i=%u", i);
 			struct cpufreq_frequency_table *prev = &table[i - 1];
 
 			if (prev->frequency == CPUFREQ_ENTRY_INVALID) {
@@ -1037,6 +1052,13 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 {
 	u32 data, src, lval, i, j = OSM_TABLE_SIZE;
 	struct clk_vdd_class *vdd = osm_clks_init[c->cluster_num].vdd_class;
+	struct osm_entry perf_ex = {
+		.lval = 154,
+		.ccount = 1,
+		.frequency = 2956800000,
+		.virtual_corner = 28,
+		.open_loop_volt = 1098,
+	};
 
 	for (i = 0; i < OSM_TABLE_SIZE; i++) {
 		data = clk_osm_read_reg(c, FREQ_REG + i * OSM_REG_SIZE);
@@ -1067,6 +1089,12 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 			j = i;
 	}
 
+	if (strncmp(c->hw.init->name, "perfcl_clk", 10) == 0) {
+		c->osm_table[27] = perf_ex;
+		j++;
+		pr_err("perfcl clk trigger");
+	}
+
 	osm_clks_init[c->cluster_num].rate_max = devm_kcalloc(&pdev->dev,
 						 j, sizeof(unsigned long),
 						       GFP_KERNEL);
@@ -1095,11 +1123,14 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 		vdd->use_max_uV = true;
 	}
 
-	for (i = 0; i < j; i++)
+	for (i = 0; i < j; i++) {
 		osm_clks_init[c->cluster_num].rate_max[i] =
 					c->osm_table[i].frequency;
+		pr_err("for i=%d j=%d, init rate_max=%ld", i, j, osm_clks_init[c->cluster_num].rate_max[i]);
+	}
 
 	c->num_entries = osm_clks_init[c->cluster_num].num_rate_max = j;
+	pr_err("n rate max %d", c->num_entries);
 	return 0;
 }
 
@@ -1349,6 +1380,7 @@ static int clk_cpu_osm_driver_probe(struct platform_device *pdev)
 			"clk: Failed to enable misc clock for L3\n");
 	WARN(clk_prepare_enable(l3_gpu_vote_clk.hw.clk),
 			"clk: Failed to enable iocoherent bwmon clock for L3\n");
+
 
 	/*
 	 * Call clk_prepare_enable for the silver clock explicitly in order to
