@@ -6308,6 +6308,13 @@ static int synaptics_ts_probe(struct i2c_client *client, const struct i2c_device
 	}
 #endif
 
+#ifdef CONFIG_SMP
+
+	ts->pm_qos_req.type = PM_QOS_REQ_AFFINE_IRQ;
+	ts->pm_qos_req.irq = ts->irq;;
+
+#endif
+
 	pm_qos_add_request(&ts->pm_qos_req, PM_QOS_CPU_DMA_LATENCY,
 		PM_QOS_DEFAULT_VALUE);
 
