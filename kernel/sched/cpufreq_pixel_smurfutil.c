@@ -22,17 +22,17 @@
 
 #define RATE_LIMIT				0
 
-#define BIT_SHIFT_1 				7
-#define BIT_SHIFT_1_2 				4
-#define BIT_SHIFT_2 				6
-#define TARGET_LOAD_1				30
-#define TARGET_LOAD_2				80
+#define BIT_SHIFT_1 				3
+#define BIT_SHIFT_1_2 				2
+#define BIT_SHIFT_2 				10
+#define TARGET_LOAD_1				25
+#define TARGET_LOAD_2				75
 
-#define BIT_SHIFT_1_BIGC 			8
-#define BIT_SHIFT_1_2_BIGC 			4
-#define BIT_SHIFT_2_BIGC 			6
-#define TARGET_LOAD_1_BIGC 			30
-#define TARGET_LOAD_2_BIGC 			80
+#define BIT_SHIFT_1_BIGC 			2
+#define BIT_SHIFT_1_2_BIGC 			2
+#define BIT_SHIFT_2_BIGC 			10
+#define TARGET_LOAD_1_BIGC 			25
+#define TARGET_LOAD_2_BIGC 			75
 
 #define DEFAULT_SUSPEND_MAX_FREQ_SILVER 300000
 #define DEFAULT_SUSPEND_MAX_FREQ_GOLD 825600
@@ -1266,9 +1266,9 @@ static int smugov_init(struct cpufreq_policy *policy)
 		goto stop_kthread;
 	}
 
-	tunables->pl = 1;
-	tunables->up_rate_limit_us = LATENCY_MULTIPLIER;
-	tunables->down_rate_limit_us = LATENCY_MULTIPLIER;
+	tunables->pl = 0;
+	tunables->up_rate_limit_us = 0;
+	tunables->down_rate_limit_us = 20000;
 	tunables->hispeed_load = DEFAULT_HISPEED_LOAD;
 	tunables->hispeed_freq = 0;
 	lat = policy->cpuinfo.transition_latency / NSEC_PER_USEC;

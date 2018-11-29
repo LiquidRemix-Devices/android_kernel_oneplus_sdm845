@@ -1207,7 +1207,7 @@ static int smugov_init(struct cpufreq_policy *policy)
 		goto stop_kthread;
 	}
 
-	tunables->pl = 1;
+	tunables->pl = 0;
 	tunables->rate_limit_us = LATENCY_MULTIPLIER;
 	tunables->hispeed_load = DEFAULT_HISPEED_LOAD;
 	tunables->hispeed_freq = 1132800;
