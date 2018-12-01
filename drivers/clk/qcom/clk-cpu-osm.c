@@ -776,7 +776,7 @@ static int osm_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		lval = data & GENMASK(7, 0);
 		core_count = CORE_COUNT_VAL(data);
 
-		if (i >= 30) { // the overclocked freq 2956800
+		if (i >= 27) { // the overclocked freq 2956800
 			src = 1;
 			div = 0;
 			lval = 154;
@@ -1055,7 +1055,7 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 		.lval = 154,
 		.ccount = 1,
 		.frequency = 2956800000,
-		.virtual_corner = 30,
+		.virtual_corner = 28,
 		.open_loop_volt = 1098,
 	};
 
@@ -1089,7 +1089,7 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 	}
 
 	if (strncmp(c->hw.init->name, "perfcl_clk", 10) == 0) {
-		c->osm_table[30] = perf_ex;
+		c->osm_table[27] = perf_ex;
 		j++;
 		pr_err("perfcl clk trigger");
 	}
