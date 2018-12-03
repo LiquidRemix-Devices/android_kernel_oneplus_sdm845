@@ -624,17 +624,17 @@ static void gpu_cc_sdm845_fixup_sdm670(struct regmap *regmap)
 }
 
 static void gpu_cc_gfx_sdm845_fixup_sdm845v2(void)
-{
+{	
 	gpu_cc_gx_gfx3d_clk_src.freq_tbl =
 				ftbl_gpu_cc_gx_gfx3d_clk_src_sdm845_v2;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_MIN] = 180000000;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_LOWER] =
-		257000000;
-	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_LOW] = 342000000;
+		300000000;
+	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_LOW] = 375000000;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_LOW_L1] =
-		414000000;
+		450000000;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_NOMINAL] =
-		520000000;
+		675000000;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_NOMINAL_L1] =
 		710000000;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_HIGH] = 767000000;
