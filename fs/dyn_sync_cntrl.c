@@ -23,7 +23,7 @@ static DEFINE_MUTEX(fsync_mutex);
 
 // Declarations
 
-bool suspend_active __read_mostly = false;
+bool suspend_active __read_mostly = true;
 bool dyn_fsync_active __read_mostly = DYN_FSYNC_ACTIVE_DEFAULT;
 
 struct notifier_block msm_drm_notif;
@@ -122,7 +122,6 @@ static int msm_drm_notifier_cb(struct notifier_block *nb,
 	
 	if (action != MSM_DRM_EARLY_EVENT_BLANK) {
 		mutex_lock(&fsync_mutex);
-			
 		suspend_active = false;
 
 		if (dyn_fsync_active) 
