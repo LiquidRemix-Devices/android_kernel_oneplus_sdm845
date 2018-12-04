@@ -100,6 +100,7 @@ struct clk_osm {
 };
 
 static bool is_sdm845v1;
+/*
 static long max_clock_set = 2803200000;
 
 static int __init set_max_clock_2803 (char *cmdline) {
@@ -144,6 +145,7 @@ __setup("2880", set_max_clock_2880);
 __setup("2918", set_max_clock_2918);
 __setup("2956", set_max_clock_2956);
 __setup("3014", set_max_clock_3014);
+*/
 
 static inline struct clk_osm *to_clk_osm(struct clk_hw *_hw)
 {
@@ -821,27 +823,43 @@ static int osm_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		div = (data & GENMASK(29, 28)) >> 28;
 		lval = data & GENMASK(7, 0);
 		core_count = CORE_COUNT_VAL(data);
-		
-		
-		if (i >= 27) { // the overclocked freq 2918400
-			src = 1;
-			div = 0;
-			if (max_clock_set == 2803200000) 
-				lval = 146;
-			if (max_clock_set == 2841600000) 
-				lval = 148;
-			if (max_clock_set == 2860800000) 
-				lval = 149;
-			if (max_clock_set == 2880000000) 
-				lval = 150;
-			if (max_clock_set == 2918400000) 
-				lval = 152;
-			if (max_clock_set == 2956800000) 
-				lval = 154;
-			if (max_clock_set == 3014400000) 
-				lval = 157;
-			core_count = 4;
-		}
+		// Discover lost frequencies
+		if (core_count == 1) core_count = 4;
+		// Extend frequency table
+		if (i > 26) {
+			if (i==27) {
+				src=1;
+				div=0;
+				lval=148;
+				core_count=4;
+			}
+			if (i==28) {
+				src=1;
+				div=0;
+				lval=149;
+				core_count=4;
+			}
+			if (i==29) {
+				lval=150;
+				core_count=4;
+			}
+			if (i==30) {
+				src=1;
+				div=0;
+				lval=152;
+				core_count=4;
+			}
+			if (i==31) {
+				lval=154;
+				core_count=4;
+			}
+			if (i>=32) {
+				src=1;
+				div=0;
+				lval=157;
+				core_count=1;
+			}	
+		}	
 
 		if (!src)
 			table[i].frequency = OSM_INIT_RATE / 1000;
@@ -849,14 +867,7 @@ static int osm_cpufreq_cpu_init(struct cpufreq_policy *policy)
 			table[i].frequency = xo_kHz * lval;
 		table[i].driver_data = table[i].frequency;
 
-		/*if (table[i].frequency == 2649600000) {
-			table[i].frequency = 2803200000;
-			lval = 146;	
-			table[i].driver_data = table[i].frequency;
-		}*/
-
 		pr_info("cpufreq i=%ull src=%ull  div=%ull  lval=%ull  core_count=%ull  calc_freq=%ull ", i, src, div, lval, core_count, table[i].frequency);
-
 		
 		if (core_count != parent->max_core_count)
 			table[i].frequency = CPUFREQ_ENTRY_INVALID;
@@ -1117,28 +1128,13 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 {
 	u32 data, src, lval, lval_set, i, j = OSM_TABLE_SIZE;
 	struct clk_vdd_class *vdd = osm_clks_init[c->cluster_num].vdd_class;
-	
-	if (max_clock_set == 2803200000) 
-		lval_set = 146;
-	if (max_clock_set == 2841600000) 
-		lval_set = 148;
-	if (max_clock_set == 2860800000) 
-		lval_set = 149;
-	if (max_clock_set == 2880000000) 
-		lval_set = 150;
-	if (max_clock_set == 2918400000) 
-		lval_set = 152;
-	if (max_clock_set == 2956800000) 
-		lval_set = 154;
-	if (max_clock_set == 3014400000) 
-		lval_set = 157;
 
 	struct osm_entry perf_ex = {
-		.lval = lval_set,
+		.lval = 157,
 		.ccount = 1,
-		.frequency = max_clock_set,
-		.virtual_corner = 28,
-		.open_loop_volt = 1048,
+		.frequency = 3014400000,
+		.virtual_corner = 30,
+		.open_loop_volt = 1088,
 	};
 
 	for (i = 0; i < OSM_TABLE_SIZE; i++) {
@@ -1147,7 +1143,7 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 		lval = (data & GENMASK(7, 0));
 		c->osm_table[i].ccount = CORE_COUNT_VAL(data);
 		c->osm_table[i].lval = lval;
-
+ 
 		if (!src)
 			c->osm_table[i].frequency = OSM_INIT_RATE;
 		else
@@ -1157,12 +1153,59 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 		c->osm_table[i].virtual_corner =
 					((data & GENMASK(21, 16)) >> 16);
 		c->osm_table[i].open_loop_volt = (data & GENMASK(11, 0));
-		//UV
-		c->osm_table[i].open_loop_volt = c->osm_table[i].open_loop_volt - 50;
 
-		pr_info("index=%d freq=%ld virtual_corner=%d open_loop_voltage=%u\n",
+		if (i > 26) {
+			if (i==27) {
+				c->osm_table[i].lval=148;
+				c->osm_table[i].frequency=2841600000;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=1058; 
+			}
+			if (i==28) {
+				c->osm_table[i].lval=149;
+				c->osm_table[i].frequency=2860800000;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=1063; 
+			}
+			if (i==29) {
+				c->osm_table[i].lval=150;
+				c->osm_table[i].frequency=2880000000;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=1068; 
+			}
+			if (i==30) {
+				c->osm_table[i].lval=152;
+				c->osm_table[i].frequency=2918400000;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=1073; 
+			}
+			if (i==31) {
+				c->osm_table[i].lval=154;
+				c->osm_table[i].frequency=2956800000;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=1078; 
+			}
+			if (i>=32) {
+				c->osm_table[i].lval=157;
+				c->osm_table[i].frequency=3014400000;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=1;
+				c->osm_table[i].open_loop_volt=1088; 
+			}
+		}
+
+		//UV
+		c->osm_table[i].open_loop_volt = c->osm_table[i].open_loop_volt - 15;
+
+		pr_info("index=%d freq=%ld virtual_corner=%d ccount %d open_loop_voltage=%u\n",
 			 i, c->osm_table[i].frequency,
 			 c->osm_table[i].virtual_corner,
+			 c->osm_table[i].ccount,
 			 c->osm_table[i].open_loop_volt);
 
 		if (i > 0 && j == OSM_TABLE_SIZE &&
@@ -1172,13 +1215,8 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 			j = i;
 	}
 
-	/*if (c->osm_table[i] .frequency == 2649600000) {
-		c->osm_table[i] .frequency = 2803200000;
-		c->osm_table[i].lval = 146;	
-	}*/
-
 	if (strncmp(c->hw.init->name, "perfcl_clk", 10) == 0) {
-		c->osm_table[27] = perf_ex;
+		c->osm_table[32] = perf_ex;
 		j++;
 		pr_err("perfcl clk trigger");
 	}
