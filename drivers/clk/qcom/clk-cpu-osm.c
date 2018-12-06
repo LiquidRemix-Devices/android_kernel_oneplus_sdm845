@@ -826,40 +826,256 @@ static int osm_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		// Discover lost frequencies
 		if (core_count == 1) core_count = 4;
 		// Extend frequency table
-		if (i > 26) {
+		if (policy->cpu >= 4) {
+			if (i==0) {
+				src=1;
+				div=1;
+				lval=21;
+				core_count=4;
+			}
+			if (i==1) {
+				src=1;
+				div=1;
+				lval=25;
+				core_count=4;
+			}
+			if (i==2) {
+				src=1;
+				div=1;
+				lval=30;
+				core_count=4;
+			}
+			if (i==3) {
+				src=1;
+				div=0;
+				lval=34;
+				core_count=4;
+			}
+			if (i==4) {
+				src=1;
+				div=0;
+				lval=39;
+				core_count=4;
+			}
+			if (i==5) {
+				src=1;
+				div=0;
+				lval=43;
+				core_count=4;
+			}
+			if (i==6) {
+				src=1;
+				div=0;
+				lval=47;
+				core_count=4;
+			}
+			if (i==7) {
+				src=1;
+				div=0;
+				lval=51;
+				core_count=4;
+			}
+			if (i==8) {
+				src=1;
+				div=0;
+				lval=55;
+				core_count=4;
+			}
+			if (i==9) {
+				src=1;
+				div=0;
+				lval=63;
+				core_count=4;
+			}
+			if (i==10) {
+				src=1;
+				div=0;
+				lval=67;
+				core_count=4;
+			}
+			if (i==11) {
+				src=1;
+				div=0;
+				lval=71;
+				core_count=4;
+			}
+			if (i==12) {
+				src=1;
+				div=0;
+				lval=76;
+				core_count=4;
+			}
+			if (i==13) {
+				src=1;
+				div=0;
+				lval=80;
+				core_count=4;
+			}
+			if (i==14) {
+				src=1;
+				div=0;
+				lval=84;
+				core_count=4;
+			}
+			if (i==15) {
+				src=1;
+				div=0;
+				lval=88;
+				core_count=4;
+			}
+			if (i==16) {
+				src=1;
+				div=0;
+				lval=92;
+				core_count=4;
+			}
+			if (i==17) {
+				src=1;
+				div=0;
+				lval=96;
+				core_count=4;
+			}
+			if (i==18) {
+				src=1;
+				div=0;
+				lval=100;
+				core_count=4;
+			}
+			if (i==19) {
+				src=1;
+				div=0;
+				lval=104;
+				core_count=4;
+			}
+			if (i==20) {
+				src=1;
+				div=0;
+				lval=109;
+				core_count=4;
+			}
+			if (i==21) {
+				src=1;
+				div=0;
+				lval=113;
+				core_count=4;
+			}
+			if (i==22) {
+				src=1;
+				div=0;
+				lval=117;
+				core_count=4;
+			}
+			if (i==23) {
+				src=1;
+				div=0;
+				lval=121;
+				core_count=4;
+			}
+			if (i==24) {
+				src=1;
+				div=0;
+				lval=125;
+				core_count=4;
+			}
+			if (i==25) {
+				src=1;
+				div=0;
+				lval=129;
+				core_count=4;
+			}
+			if (i==26) {
+				src=1;
+				div=0;
+				lval=133;
+				core_count=4;
+			}
 			if (i==27) {
 				src=1;
 				div=0;
-				lval=148;
+				lval=138;
 				core_count=4;
 			}
 			if (i==28) {
 				src=1;
 				div=0;
-				lval=149;
+				lval=141;
 				core_count=4;
 			}
 			if (i==29) {
-				lval=150;
+				src=1;
+				div=0;
+				lval=144;
 				core_count=4;
 			}
 			if (i==30) {
 				src=1;
 				div=0;
-				lval=152;
+				lval=146;
 				core_count=4;
 			}
 			if (i==31) {
-				lval=154;
-				core_count=4;
+				src=1;
+				div=0;
+				lval=148;
+				core_count=1;
 			}
-			if (i>=32) {
+			if (i==32) {
+				src=1;
+				div=0;
+				lval=149;
+				core_count=1;
+			}
+			if (i==33) {
+				src=1;
+				div=0;
+				lval=150;
+				core_count=1;
+			}
+			if (i==34) {
+				src=1;
+				div=0;
+				lval=152;
+				core_count=1;
+			}
+			if (i==35) {
+				src=1;
+				div=0;
+				lval=154;
+				core_count=1;
+			}
+			if (i==36) {
 				src=1;
 				div=0;
 				lval=157;
 				core_count=1;
+			}
+			if (i>=37) {
+				src=1;
+				div=0;
+				lval=162;
+				core_count=1;
 			}	
 		}	
+		if (policy->cpu < 4) {
+			if (i==18) {
+				src=1;
+				div=0;
+				lval=96;
+				core_count=4;
+			}
+			if (i==19) {
+				src=1;
+				div=0;
+				lval=100;
+				core_count=4;
+			}
+			if (i>=20) {
+				src=1;
+				div=0;
+				lval=104;
+				core_count=4;
+			}
+		}
 
 		if (!src)
 			table[i].frequency = OSM_INIT_RATE / 1000;
@@ -1129,13 +1345,15 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 	u32 data, src, lval, lval_set, i, j = OSM_TABLE_SIZE;
 	struct clk_vdd_class *vdd = osm_clks_init[c->cluster_num].vdd_class;
 
-	struct osm_entry perf_ex = {
+	/*struct osm_entry perf_ex = {
 		.lval = 157,
 		.ccount = 1,
 		.frequency = 3014400000,
 		.virtual_corner = 30,
 		.open_loop_volt = 1088,
-	};
+	};*/
+
+	pr_info ("Clustername %s",pdev->name);
 
 	for (i = 0; i < OSM_TABLE_SIZE; i++) {
 		data = clk_osm_read_reg(c, FREQ_REG + i * OSM_REG_SIZE);
@@ -1154,53 +1372,301 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 					((data & GENMASK(21, 16)) >> 16);
 		c->osm_table[i].open_loop_volt = (data & GENMASK(11, 0));
 
-		if (i > 26) {
-			if (i==27) {
-				c->osm_table[i].lval=148;
-				c->osm_table[i].frequency=2841600000;
+		if (c->cluster_num == 2) {
+			if (i==0) {
+				c->osm_table[i].lval=21;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
 				c->osm_table[i].virtual_corner=i;
 				c->osm_table[i].ccount=4;
-				c->osm_table[i].open_loop_volt=1058; 
+				c->osm_table[i].open_loop_volt=585; 
+			}
+			if (i==1) {
+				c->osm_table[i].lval=25;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=585; 
+			}
+			if (i==2) {
+				c->osm_table[i].lval=30;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=590; 
+			}
+			if (i==3) {
+				c->osm_table[i].lval=34;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=595; 
+			}
+			if (i==4) {
+				c->osm_table[i].lval=39;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=600; 
+			}
+			if (i==5) {
+				c->osm_table[i].lval=43;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=620; 
+			}
+			if (i==6) {
+				c->osm_table[i].lval=47;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=632; 
+			}
+			if (i==7) {
+				c->osm_table[i].lval=51;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=644; 
+			}
+			if (i==8) {
+				c->osm_table[i].lval=55;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=652; 
+			}
+			if (i==9) {
+				c->osm_table[i].lval=63;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=664; 
+			}
+			if (i==10) {
+				c->osm_table[i].lval=67;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=676; 
+			}
+			if (i==11) {
+				c->osm_table[i].lval=71;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=692; 
+			}
+			if (i==12) {
+				c->osm_table[i].lval=76;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=700; 
+			}
+			if (i==13) {
+				c->osm_table[i].lval=80;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=720; 
+			}
+			if (i==14) {
+				c->osm_table[i].lval=84;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=736; 
+			}
+			if (i==15) {
+				c->osm_table[i].lval=88;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=752; 
+			}
+			if (i==16) {
+				c->osm_table[i].lval=92;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=776; 
+			}
+			if (i==17) {
+				c->osm_table[i].lval=96;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=792; 
+			}
+			if (i==18) {
+				c->osm_table[i].lval=100;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=804; 
+			}
+			if (i==19) {
+				c->osm_table[i].lval=104;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=824; 
+			}
+			if (i==20) {
+				c->osm_table[i].lval=109;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=856; 
+			}
+			if (i==21) {
+				c->osm_table[i].lval=113;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=880; 
+			}
+			if (i==22) {
+				c->osm_table[i].lval=117;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=880; 
+			}
+			if (i==23) {
+				c->osm_table[i].lval=121;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=904; 
+			}
+			if (i==24) {
+				c->osm_table[i].lval=125;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=924; 
+			}
+			if (i==25) {
+				c->osm_table[i].lval=129;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=948; 
+			}
+			if (i==26) {
+				c->osm_table[i].lval=133;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=964; 
+			}
+			if (i==27) {
+				c->osm_table[i].lval=138;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=992; 
 			}
 			if (i==28) {
-				c->osm_table[i].lval=149;
-				c->osm_table[i].frequency=2860800000;
+				c->osm_table[i].lval=141;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
 				c->osm_table[i].virtual_corner=i;
 				c->osm_table[i].ccount=4;
-				c->osm_table[i].open_loop_volt=1063; 
+				c->osm_table[i].open_loop_volt=992; 
 			}
 			if (i==29) {
-				c->osm_table[i].lval=150;
-				c->osm_table[i].frequency=2880000000;
+				c->osm_table[i].lval=144;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
 				c->osm_table[i].virtual_corner=i;
 				c->osm_table[i].ccount=4;
-				c->osm_table[i].open_loop_volt=1068; 
+				c->osm_table[i].open_loop_volt=1028; 
 			}
 			if (i==30) {
-				c->osm_table[i].lval=152;
-				c->osm_table[i].frequency=2918400000;
+				c->osm_table[i].lval=146;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
 				c->osm_table[i].virtual_corner=i;
-				c->osm_table[i].ccount=4;
-				c->osm_table[i].open_loop_volt=1073; 
+				c->osm_table[i].ccount=1;
+				c->osm_table[i].open_loop_volt=1036; 
 			}
 			if (i==31) {
-				c->osm_table[i].lval=154;
-				c->osm_table[i].frequency=2956800000;
+				c->osm_table[i].lval=148;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
 				c->osm_table[i].virtual_corner=i;
-				c->osm_table[i].ccount=4;
+				c->osm_table[i].ccount=1;
+				c->osm_table[i].open_loop_volt=1048; 
+			}
+			if (i==32) {
+				c->osm_table[i].lval=149;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=1;
+				c->osm_table[i].open_loop_volt=1058; 
+			}
+			if (i==33) {
+				c->osm_table[i].lval=150;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=1;
+				c->osm_table[i].open_loop_volt=1068; 
+			}
+			if (i==34) {
+				c->osm_table[i].lval=152;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=1;
 				c->osm_table[i].open_loop_volt=1078; 
 			}
-			if (i>=32) {
-				c->osm_table[i].lval=157;
-				c->osm_table[i].frequency=3014400000;
+			if (i==35) {
+				c->osm_table[i].lval=154;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
 				c->osm_table[i].virtual_corner=i;
 				c->osm_table[i].ccount=1;
 				c->osm_table[i].open_loop_volt=1088; 
 			}
+			if (i==36) {
+				c->osm_table[i].lval=157;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=1;
+				c->osm_table[i].open_loop_volt=1098; 
+			}
+			if (i>=37) {
+				c->osm_table[i].lval=162;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=1;
+				c->osm_table[i].open_loop_volt=1118; 
+			}
+		}
+		
+		if (c->cluster_num == 1) {
+			if (i==18) {
+				c->osm_table[i].lval=96;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=773; 
+			}
+			if (i==19) {
+				c->osm_table[i].lval=100;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=793; 
+			}
+			if (i>=20) {
+				c->osm_table[i].lval=104;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=813; 
+			}
 		}
 
 		//UV
-		c->osm_table[i].open_loop_volt = c->osm_table[i].open_loop_volt - 15;
+		c->osm_table[i].open_loop_volt = c->osm_table[i].open_loop_volt - 20;
 
 		pr_info("index=%d freq=%ld virtual_corner=%d ccount %d open_loop_voltage=%u\n",
 			 i, c->osm_table[i].frequency,
@@ -1215,11 +1681,11 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 			j = i;
 	}
 
-	if (strncmp(c->hw.init->name, "perfcl_clk", 10) == 0) {
+	/*if (strncmp(c->hw.init->name, "perfcl_clk", 10) == 0) {
 		c->osm_table[32] = perf_ex;
 		j++;
 		pr_err("perfcl clk trigger");
-	}
+	}*/
 
 	osm_clks_init[c->cluster_num].rate_max = devm_kcalloc(&pdev->dev,
 						 j, sizeof(unsigned long),
