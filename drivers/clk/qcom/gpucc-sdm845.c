@@ -321,7 +321,7 @@ static struct clk_rcg2 gpu_cc_gx_gfx3d_clk_src = {
 			NOMINAL, 410000000,  //425
 			NOMINAL_L1, 472000000, //487
 			HIGH, 533000000, //548
-			HIGH_L1, 585000000),// 600
+			HIGH_L1, 58500000),// 600
 	},
 };
 
@@ -629,12 +629,12 @@ static void gpu_cc_gfx_sdm845_fixup_sdm845v2(void)
 				ftbl_gpu_cc_gx_gfx3d_clk_src_sdm845_v2;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_MIN] = 180000000;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_LOWER] =
-		300000000;
-	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_LOW] = 375000000;
+		257000000;
+	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_LOW] = 342000000;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_LOW_L1] =
-		450000000;
+		414000000;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_NOMINAL] =
-		675000000;
+		520000000;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_NOMINAL_L1] =
 		710000000;
 	gpu_cc_gx_gfx3d_clk_src.clkr.hw.init->rate_max[VDD_GX_HIGH] = 767000000;
