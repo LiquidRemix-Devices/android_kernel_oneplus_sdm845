@@ -321,7 +321,7 @@ static struct clk_rcg2 gpu_cc_gx_gfx3d_clk_src = {
 			NOMINAL, 410000000,  //425
 			NOMINAL_L1, 472000000, //487
 			HIGH, 533000000, //548
-			HIGH_L1, 58500000),// 600
+			HIGH_L1, 60500000),// 600
 	},
 };
 
