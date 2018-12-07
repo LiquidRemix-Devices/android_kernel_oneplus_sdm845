@@ -31,6 +31,16 @@
 #include <linux/cpu_cooling.h>
 #include <trace/events/power.h>
 
+// Nebula: Default startup frequencies ( No Overclock Freq's Allowed Durning Bootup:
+#define CONFIG_CPU_FREQ_MIN_CLUSTER1	300000
+#define CONFIG_CPU_FREQ_MAX_CLUSTER1	1766000
+#define CONFIG_CPU_FREQ_MIN_CLUSTER2	300000
+#define CONFIG_CPU_FREQ_MAX_CLUSTER2	1766000
+#define CONFIG_CPU_FREQ_MIN_CLUSTER3	300000
+#define CONFIG_CPU_FREQ_MAX_CLUSTER3	2803200
+#define CONFIG_CPU_FREQ_MIN_CLUSTER4	300000
+#define CONFIG_CPU_FREQ_MAX_CLUSTER4	2803200
+
 static DEFINE_MUTEX(l2bw_lock);
 
 static struct thermal_cooling_device *cdev[NR_CPUS];
@@ -161,10 +171,57 @@ static int msm_cpufreq_init(struct cpufreq_policy *policy)
 
 	ret = cpufreq_table_validate_and_show(policy, table);
 	if (ret) {
+		// Nebula: set default frequencies to prevent overclocking or underclocking during start
+		if (policy->cpu <= 1)
+		{
+			policy->cpuinfo.min_freq = CONFIG_CPU_FREQ_MIN_CLUSTER1;
+			policy->cpuinfo.max_freq = CONFIG_CPU_FREQ_MAX_CLUSTER1;
+		}
+
+		if (policy->cpu >= 2)
+		{
+			policy->cpuinfo.min_freq = CONFIG_CPU_FREQ_MIN_CLUSTER2;
+			policy->cpuinfo.max_freq = CONFIG_CPU_FREQ_MAX_CLUSTER2;
+		}
+
+		if (policy->cpu >= 3)
+		{
+			policy->cpuinfo.min_freq = CONFIG_CPU_FREQ_MIN_CLUSTER3;
+			policy->cpuinfo.max_freq = CONFIG_CPU_FREQ_MAX_CLUSTER3;
+		}
+		
+		if (policy->cpu >= 4)
+		{
+			policy->cpuinfo.min_freq = CONFIG_CPU_FREQ_MIN_CLUSTER4;
+			policy->cpuinfo.max_freq = CONFIG_CPU_FREQ_MAX_CLUSTER4;
+		}
 		pr_err("cpufreq: failed to get policy min/max\n");
 		return ret;
 	}
 
+	if (policy->cpu <= 1)
+	{
+		policy->min = CONFIG_CPU_FREQ_MIN_CLUSTER1;
+		policy->max = CONFIG_CPU_FREQ_MAX_CLUSTER1;
+	}
+
+	if (policy->cpu >= 2)
+	{
+		policy->min = CONFIG_CPU_FREQ_MIN_CLUSTER2;
+		policy->max = CONFIG_CPU_FREQ_MAX_CLUSTER2;
+	}
+	
+	if (policy->cpu >= 3)
+	{
+		policy->min = CONFIG_CPU_FREQ_MIN_CLUSTER3;
+		policy->max = CONFIG_CPU_FREQ_MAX_CLUSTER3;
+	}
+	
+	if (policy->cpu >= 4)
+	{
+		policy->min = CONFIG_CPU_FREQ_MIN_CLUSTER4;
+		policy->max = CONFIG_CPU_FREQ_MAX_CLUSTER4;
+	}
 	cur_freq = clk_get_rate(cpu_clk[policy->cpu])/1000;
 
 	index =  cpufreq_frequency_table_target(policy, cur_freq,
