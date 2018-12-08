@@ -369,8 +369,7 @@ CHECK		= sparse
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-OPTS			= -fmodulo-sched -fmodulo-sched-allow-regmoves -ftree-vectorize -ftree-loop-vectorize -ftree-slp-vectorize -ftree-loop-distribute-patterns -fvect-cost-model -fgcse-after-reload -fgcse-sm -fsched-spec-load -ffast-math -fsingle-precision-constant -fpredictive-commoning \
--fasynchronous-unwind-tables -fno-signed-zeros -fno-trapping-math -frename-registers -funroll-loops \
+OPTS			= -fmodulo-sched -fmodulo-sched-allow-regmoves -ftree-vectorize -ftree-loop-vectorize -ftree-slp-vectorize -ftree-loop-distribute-patterns -fvect-cost-model -fgcse-after-reload -fgcse-sm -fsched-spec-load -ffast-math -funsafe-math-optimizations -floop-nest-optimize -ftree-loop-distribution -fsingle-precision-constant -fpredictive-commoning -fgraphite-identity -fasynchronous-unwind-tables -fno-signed-zeros -fno-trapping-math -frename-registers -funroll-loops
 
 NOSTDINC_FLAGS  =
 CFLAGS_MODULE   =
@@ -417,6 +416,11 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-format-truncation -Wno-duplicate-decl-specifier -Wno-memset-elt-size -Wno-bool-operation \
 		   -Wno-int-in-bool-context -Wno-parentheses -Wno-switch-unreachable -Wno-stringop-overflow -Wno-format-overflow \
                    -Wno-nonnull -Wno-shift-overflow -fno-asynchronous-unwind-tables \
+		   -floop-nest-optimize -fgraphite-identity -fgcse-sm -fwrapv \
+		   -ftree-loop-distribution -mno-fix-cortex-a53-835769 \
+		   -fgcse-las -fbranch-target-load-optimize -fipa-pta -ftracer \
+		   -flive-range-shrinkage -fvariable-expansion-in-unroller \
+		   -ffast-math -funsafe-math-optimizations
 		   
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
