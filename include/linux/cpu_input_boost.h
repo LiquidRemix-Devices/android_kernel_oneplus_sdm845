@@ -17,6 +17,7 @@
 void cpu_input_boost_kick(void);
 void cpu_input_boost_kick_max(unsigned int duration_ms);
 void cluster_input_boost_kick_max(unsigned int duration_ms, int cpu);
+void cpu_input_boost_kick_general(unsigned int duration_ms);
 #else
 static inline void cpu_input_boost_kick(void)
 {
@@ -24,7 +25,12 @@ static inline void cpu_input_boost_kick(void)
 static inline void cpu_input_boost_kick_max(unsigned int duration_ms)
 {
 }
+<<<<<<< HEAD
 void core_input_boost_kick_max(unsigned int duration_ms, unsigned int cpu)
+=======
+static inline void cpu_input_boost_kick_wake(void)
+static inline void cpu_input_boost_kick_general(unsigned int duration_ms)
+>>>>>>> 20a5927... cpu_input_boost: add API for general CPU boosting
 {
 }
 #endif
