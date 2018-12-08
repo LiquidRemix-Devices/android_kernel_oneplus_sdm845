@@ -101,6 +101,28 @@ struct clk_osm {
 
 static bool is_sdm845v1;
 
+static long max_clock_set = 1;
+
+static int __init set_max_clock_2803 (char *cmdline) {
+	max_clock_set = 1;
+	return 1;
+}
+
+static int __init set_max_clock_3014 (char *cmdline) {
+	max_clock_set = 2;
+	return 1;
+}
+
+static int __init set_max_clock_3206 (char *cmdline) {
+	max_clock_set = 3;
+	return 1;
+}
+
+__setup("2803", set_max_clock_2803);
+__setup("3014", set_max_clock_3014);
+__setup("3206", set_max_clock_3206);
+
+
 static inline struct clk_osm *to_clk_osm(struct clk_hw *_hw)
 {
 	return container_of(_hw, struct clk_osm, hw);
@@ -765,6 +787,8 @@ static int osm_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	if (!table)
 		return -ENOMEM;
 
+	pr_err("base xo_Khz=%u", xo_kHz);
+	pr_err("max_core_count=%d", parent->max_core_count);
 	for (i = 0; i < OSM_TABLE_SIZE; i++) {
 		u32 data, src, div, lval, core_count;
 
@@ -773,6 +797,214 @@ static int osm_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		div = (data & GENMASK(29, 28)) >> 28;
 		lval = data & GENMASK(7, 0);
 		core_count = CORE_COUNT_VAL(data);
+		// Discover lost frequencies
+		if (core_count == 1) core_count = 4;
+		// Extend frequency table
+		if (policy->cpu >= 4) {
+			if (i==0) {
+				src=1;
+				div=0;
+				lval=30;
+				core_count=4;
+			}
+			if (i==1) {
+				src=1;
+				div=0;
+				lval=34;
+				core_count=4;
+			}
+			if (i==2) {
+				src=1;
+				div=0;
+				lval=39;
+				core_count=4;
+			}
+			if (i==3) {
+				src=1;
+				div=0;
+				lval=43;
+				core_count=4;
+			}
+			if (i==4) {
+				src=1;
+				div=0;
+				lval=47;
+				core_count=4;
+			}
+			if (i==5) {
+				src=1;
+				div=0;
+				lval=51;
+				core_count=4;
+			}
+			if (i==6) {
+				src=1;
+				div=0;
+				lval=55;
+				core_count=4;
+			}
+			if (i==7) {
+				src=1;
+				div=0;
+				lval=63;
+				core_count=4;
+			}
+			if (i==8) {
+				src=1;
+				div=0;
+				lval=67;
+				core_count=4;
+			}
+			if (i==9) {
+				src=1;
+				div=0;
+				lval=71;
+				core_count=4;
+			}
+			if (i==10) {
+				src=1;
+				div=0;
+				lval=76;
+				core_count=4;
+			}
+			if (i==11) {
+				src=1;
+				div=0;
+				lval=80;
+				core_count=4;
+			}
+			if (i==12) {
+				src=1;
+				div=0;
+				lval=84;
+				core_count=4;
+			}
+			if (i==13) {
+				src=1;
+				div=0;
+				lval=88;
+				core_count=4;
+			}
+			if (i==14) {
+				src=1;
+				div=0;
+				lval=92;
+				core_count=4;
+			}
+			if (i==15) {
+				src=1;
+				div=0;
+				lval=96;
+				core_count=4;
+			}
+			if (i==16) {
+				src=1;
+				div=0;
+				lval=100;
+				core_count=4;
+			}
+			if (i==17) {
+				src=1;
+				div=0;
+				lval=104;
+				core_count=4;
+			}
+			if (i==18) {
+				src=1;
+				div=0;
+				lval=109;
+				core_count=4;
+			}
+			if (i==19) {
+				src=1;
+				div=0;
+				lval=113;
+				core_count=4;
+			}
+			if (i==20) {
+				src=1;
+				div=0;
+				lval=117;
+				core_count=4;
+			}
+			if (i==21) {
+				src=1;
+				div=0;
+				lval=121;
+				core_count=4;
+			}
+			if (i==22) {
+				src=1;
+				div=0;
+				lval=125;
+				core_count=4;
+			}
+			if (i==23) {
+				src=1;
+				div=0;
+				lval=129;
+				core_count=4;
+			}
+			if (i==24) {
+				src=1;
+				div=0;
+				lval=133;
+				core_count=4;
+			}
+			if (i==25) {
+				src=1;
+				div=0;
+				lval=138;
+				core_count=4;
+			}
+			if (max_clock_set >= 1)
+				if (i>=26) {
+					src=1;
+					div=0;
+					lval=146;
+					if (max_clock_set > 1)	
+						core_count=4;
+					else
+						core_count=1;				
+				}
+			if (max_clock_set >= 2)
+				if (i>=27) {
+					src=1;
+					div=0;
+					lval=157;
+					if (max_clock_set > 2)	
+						core_count=4;
+					else
+						core_count=1;	
+			}
+			if (max_clock_set == 3)
+				if (i>=28) {
+					src=1;
+					div=0;
+					lval=167;
+					core_count=1;
+				}	
+		}	
+		if (policy->cpu < 4) {
+			if (i==18) {
+				src=1;
+				div=0;
+				lval=96;
+				core_count=4;
+			}
+			if (i==19) {
+				src=1;
+				div=0;
+				lval=100;
+				core_count=4;
+			}
+			if (i>=20) {
+				src=1;
+				div=0;
+				lval=104;
+				core_count=4;
+			}
+		}
 
 		if (!src)
 			table[i].frequency = OSM_INIT_RATE / 1000;
@@ -780,8 +1012,12 @@ static int osm_cpufreq_cpu_init(struct cpufreq_policy *policy)
 			table[i].frequency = xo_kHz * lval;
 		table[i].driver_data = table[i].frequency;
 
+		//pr_info("cpufreq i=%ull src=%ull  div=%ull  lval=%ull  core_count=%ull  calc_freq=%ull ", i, src, div, lval, core_count, table[i].frequency);
+		
 		if (core_count != parent->max_core_count)
 			table[i].frequency = CPUFREQ_ENTRY_INVALID;
+
+		
 
 		/*
 		 * Two of the same frequencies with the same core counts means
@@ -1035,7 +1271,7 @@ static u64 clk_osm_get_cpu_cycle_counter(int cpu)
 
 static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 {
-	u32 data, src, lval, i, j = OSM_TABLE_SIZE;
+	u32 data, src, lval, lval_set, i, j = OSM_TABLE_SIZE;
 	struct clk_vdd_class *vdd = osm_clks_init[c->cluster_num].vdd_class;
 
 	for (i = 0; i < OSM_TABLE_SIZE; i++) {
@@ -1044,7 +1280,7 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 		lval = (data & GENMASK(7, 0));
 		c->osm_table[i].ccount = CORE_COUNT_VAL(data);
 		c->osm_table[i].lval = lval;
-
+ 
 		if (!src)
 			c->osm_table[i].frequency = OSM_INIT_RATE;
 		else
@@ -1055,10 +1291,253 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 					((data & GENMASK(21, 16)) >> 16);
 		c->osm_table[i].open_loop_volt = (data & GENMASK(11, 0));
 
-		pr_debug("index=%d freq=%ld virtual_corner=%d open_loop_voltage=%u\n",
+		if (c->cluster_num == 2) {
+			if (i==0) {
+				c->osm_table[i].lval=30;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=590; 
+			}
+			if (i==1) {
+				c->osm_table[i].lval=34;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=595; 
+			}
+			if (i==2) {
+				c->osm_table[i].lval=39;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=600; 
+			}
+			if (i==3) {
+				c->osm_table[i].lval=43;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=620; 
+			}
+			if (i==4) {
+				c->osm_table[i].lval=47;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=632; 
+			}
+			if (i==5) {
+				c->osm_table[i].lval=51;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=644; 
+			}
+			if (i==6) {
+				c->osm_table[i].lval=55;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=652; 
+			}
+			if (i==7) {
+				c->osm_table[i].lval=63;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=664; 
+			}
+			if (i==8) {
+				c->osm_table[i].lval=67;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=676; 
+			}
+			if (i==9) {
+				c->osm_table[i].lval=71;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=692; 
+			}
+			if (i==10) {
+				c->osm_table[i].lval=76;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=700; 
+			}
+			if (i==11) {
+				c->osm_table[i].lval=80;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=720; 
+			}
+			if (i==12) {
+				c->osm_table[i].lval=84;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=736; 
+			}
+			if (i==13) {
+				c->osm_table[i].lval=88;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=752; 
+			}
+			if (i==14) {
+				c->osm_table[i].lval=92;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=776; 
+			}
+			if (i==15) {
+				c->osm_table[i].lval=96;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=792; 
+			}
+			if (i==16) {
+				c->osm_table[i].lval=100;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=804; 
+			}
+			if (i==17) {
+				c->osm_table[i].lval=104;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=824; 
+			}
+			if (i==18) {
+				c->osm_table[i].lval=109;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=856; 
+			}
+			if (i==19) {
+				c->osm_table[i].lval=113;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=880; 
+			}
+			if (i==20) {
+				c->osm_table[i].lval=117;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=880; 
+			}
+			if (i==21) {
+				c->osm_table[i].lval=121;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=904; 
+			}
+			if (i==22) {
+				c->osm_table[i].lval=125;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=924; 
+			}
+			if (i==23) {
+				c->osm_table[i].lval=129;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=948; 
+			}
+			if (i==24) {
+				c->osm_table[i].lval=133;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=964; 
+			}
+			if (i==25) {
+				c->osm_table[i].lval=138;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=992; 
+			}
+			if (max_clock_set >= 1)
+				if (i>=26) {
+					c->osm_table[i].lval=146;
+					c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+					c->osm_table[i].virtual_corner=i;
+					c->osm_table[i].open_loop_volt=1036; 
+					if (max_clock_set > 1)
+						c->osm_table[i].ccount=4;
+					else
+						c->osm_table[i].ccount=1;
+				}
+			if (max_clock_set >= 2)
+				if (i>=27) {
+					c->osm_table[i].lval=157;
+					c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+					c->osm_table[i].virtual_corner=i;
+					c->osm_table[i].open_loop_volt=1098; 
+					if (max_clock_set > 2)
+						c->osm_table[i].ccount=4;
+					else
+						c->osm_table[i].ccount=1;
+				}
+			if (max_clock_set == 3)
+				if (i>=28) {
+					c->osm_table[i].lval=167;
+					c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+					c->osm_table[i].virtual_corner=i;
+					c->osm_table[i].open_loop_volt=1118;
+					c->osm_table[i].ccount=1;
+				}
+		}
+		
+		if (c->cluster_num == 1) {
+			if (i==18) {
+				c->osm_table[i].lval=96;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=773; 
+			}
+			if (i==19) {
+				c->osm_table[i].lval=100;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=793; 
+			}
+			if (i>=20) {
+				c->osm_table[i].lval=104;
+				c->osm_table[i].frequency=XO_RATE * c->osm_table[i].lval;
+				c->osm_table[i].virtual_corner=i;
+				c->osm_table[i].ccount=4;
+				c->osm_table[i].open_loop_volt=813; 
+			}
+		}
+
+		//UV
+		c->osm_table[i].open_loop_volt = c->osm_table[i].open_loop_volt - 25;
+
+		/*pr_info("index=%d freq=%ld virtual_corner=%d ccount %d open_loop_voltage=%u\n",
 			 i, c->osm_table[i].frequency,
 			 c->osm_table[i].virtual_corner,
-			 c->osm_table[i].open_loop_volt);
+			 c->osm_table[i].ccount,
+			 c->osm_table[i].open_loop_volt);*/
 
 		if (i > 0 && j == OSM_TABLE_SIZE &&
 				c->osm_table[i].frequency ==
@@ -1095,11 +1574,14 @@ static int clk_osm_read_lut(struct platform_device *pdev, struct clk_osm *c)
 		vdd->use_max_uV = true;
 	}
 
-	for (i = 0; i < j; i++)
+	for (i = 0; i < j; i++) {
 		osm_clks_init[c->cluster_num].rate_max[i] =
 					c->osm_table[i].frequency;
+		pr_err("for i=%d j=%d, init rate_max=%ld", i, j, osm_clks_init[c->cluster_num].rate_max[i]);
+	}
 
 	c->num_entries = osm_clks_init[c->cluster_num].num_rate_max = j;
+	pr_err("n rate max %d", c->num_entries);
 	return 0;
 }
 
@@ -1349,6 +1831,7 @@ static int clk_cpu_osm_driver_probe(struct platform_device *pdev)
 			"clk: Failed to enable misc clock for L3\n");
 	WARN(clk_prepare_enable(l3_gpu_vote_clk.hw.clk),
 			"clk: Failed to enable iocoherent bwmon clock for L3\n");
+
 
 	/*
 	 * Call clk_prepare_enable for the silver clock explicitly in order to

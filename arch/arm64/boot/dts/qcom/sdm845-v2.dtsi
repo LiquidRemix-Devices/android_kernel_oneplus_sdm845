@@ -429,6 +429,9 @@
 			1612800 134
 			1689600 143
 			1766400 160
+			1843200 177
+			1920000 190
+			1996800 195
 		>;
 		idle-cost-data = <
 			10 8 6 4
@@ -471,6 +474,8 @@
 			2784000 2350
 			2803200 2400
 			2956800 2500
+			3014400 2540
+			3206400 2580
 		>;
 		idle-cost-data = <
 			25 20 15 10
@@ -496,6 +501,9 @@
 			1612800 13
 			1689600 15
 			1766400 17
+			1843200 19
+			1920000 21
+			1996800 23
 		>;
 		idle-cost-data = <
 			4 3 2 1
@@ -537,8 +545,9 @@
 			2764800 160
 			2784000 165
 			2803200 170
-			2841600 180
 			2956800 190
+			3014400 195
+			3206400 205
 		>;
 		idle-cost-data = <
 			4 3 2 1
@@ -566,7 +575,7 @@
 
 		qcom,gpu-pwrlevel@0 {
 			reg = <0>;
-			qcom,gpu-freq = <710000000>;
+			qcom,gpu-freq = <844000000>;
 			qcom,bus-freq = <12>;
 			qcom,bus-min = <12>;
 			qcom,bus-max = <12>;
@@ -574,7 +583,7 @@
 
 		qcom,gpu-pwrlevel@1 {
 			reg = <1>;
-			qcom,gpu-freq = <675000000>;
+			qcom,gpu-freq = <767000000>;
 			qcom,bus-freq = <12>;
 			qcom,bus-min = <10>;
 			qcom,bus-max = <12>;
@@ -582,7 +591,7 @@
 
 		qcom,gpu-pwrlevel@2 {
 			reg = <2>;
-			qcom,gpu-freq = <596000000>;
+			qcom,gpu-freq = <710000000>;
 			qcom,bus-freq = <10>;
 			qcom,bus-min = <9>;
 			qcom,bus-max = <12>;
