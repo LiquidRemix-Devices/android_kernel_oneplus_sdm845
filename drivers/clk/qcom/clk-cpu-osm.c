@@ -101,7 +101,7 @@ struct clk_osm {
 
 static bool is_sdm845v1;
 
-static long max_clock_set = 2803200000;
+static long max_clock_set = 1;
 
 static int __init set_max_clock_2803 (char *cmdline) {
 	max_clock_set = 1;
