@@ -1059,7 +1059,8 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 selftest_bypass:
 	selected_oom_score_adj = min_score_adj;
 
-	devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, 250);
+	cpu_input_boost_kick_general(100);
+	devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, 100);
 
 	rcu_read_lock();
 
