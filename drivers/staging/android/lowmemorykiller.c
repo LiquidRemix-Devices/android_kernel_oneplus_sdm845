@@ -50,6 +50,7 @@
 #include <linux/vmpressure.h>
 #include <linux/freezer.h>
 #include <linux/devfreq_boost.h>
+#include <linux/cpu_input_boost.h>
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/almk.h>
