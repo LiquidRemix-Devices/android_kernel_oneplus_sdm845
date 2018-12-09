@@ -79,6 +79,7 @@
 #include <linux/cpufreq_times.h>
 #include <linux/cpu_input_boost.h>
 #include <linux/devfreq_boost.h>
+#include <linux/state_notifier.h>
 
 #include <asm/switch_to.h>
 #include <asm/tlb.h>
@@ -2786,7 +2787,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 #endif
 
 	put_cpu();
-	if (is_zygote_pid(p->pid)) {
+	if (is_zygote_pid(p->pid) && !state_suspended) {
 		cluster_input_boost_kick_max(1250, cpu);
 		devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, 1250);
 	}
