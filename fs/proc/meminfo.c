@@ -154,7 +154,9 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
 	show_val_kb(m, "CmaFree:        ",
 		    global_page_state(NR_FREE_CMA_PAGES));
 #endif
+#ifdef CONFIG_ANDROID_LOW_MEMORY_KILLER 
 	show_val_kb(m, "killed_num:     ", killed_num);
+#endif
 	show_val_kb(m, "a_shrink_num:   ", active_nr);
 	show_val_kb(m, "ina_shrink_num: ", inactive_nr);
 	for (iter = 0; iter < 5; iter++)
