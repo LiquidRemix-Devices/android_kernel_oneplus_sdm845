@@ -2077,7 +2077,7 @@ u8 gup_init_update_proc(struct goodix_ts_data *ts)
 
 	dev_info(&ts->client->dev, "Ready to run update thread.");
 
-	thread = kthread_run(gup_update_proc,
+	thread = kthread_run_perf_critical(gup_update_proc,
 			(void *)NULL, "guitar_update");
 
 	if (IS_ERR(thread)) {

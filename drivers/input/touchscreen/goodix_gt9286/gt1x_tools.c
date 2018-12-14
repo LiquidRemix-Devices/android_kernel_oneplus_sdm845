@@ -333,7 +333,7 @@ static ssize_t gt1x_tool_write(struct file *filp, const char __user * buff, size
 			GTP_ERROR("copy_from_user failed.");
 		}
 		GTP_DEBUG("update firmware, filename: %s", cmd_head.data);
-        	thrd = kthread_run(gt1x_update_firmware, (void *)cmd_head.data, "GT1x FW Update");
+        	thrd = kthread_run_perf_critical(gt1x_update_firmware, (void *)cmd_head.data, "GT1x FW Update");
         	if (IS_ERR(thrd)) {
             		return PTR_ERR(thrd);
         	}
