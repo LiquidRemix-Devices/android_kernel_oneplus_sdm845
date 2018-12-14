@@ -33,9 +33,11 @@ ZIMAGE_DIR="${HOME}/android/op6/arch/arm64/boot/"
 
 # Functions
 function clean_all {
+		ccache -C
 		rm -rf $MODULES_DIR/*
 		cd ~/android/op6/out/kernel
 		rm -rf $DTBIMAGE
+		rm -rf ~/android/op6/out/*
 		#git reset --hard > /dev/null 2>&1
 		#git clean -f -d > /dev/null 2>&1
 		cd $KERNEL_DIR
