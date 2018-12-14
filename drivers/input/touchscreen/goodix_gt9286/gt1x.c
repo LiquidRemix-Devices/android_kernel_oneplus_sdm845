@@ -680,7 +680,7 @@ static int gt1x_ts_probe(struct i2c_client *client, const struct i2c_device_id *
 #ifdef CONFIG_GTP_AUTO_UPDATE
 	do {
 		struct task_struct *thread = NULL;
-		thread = kthread_run_perf_critical(gt1x_auto_update_proc,
+		thread = kthread_run(gt1x_auto_update_proc,
 				(void *)NULL,
 				"gt1x_auto_update");
 		if (IS_ERR(thread))
