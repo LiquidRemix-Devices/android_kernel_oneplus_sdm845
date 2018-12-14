@@ -6720,7 +6720,6 @@ static int msm_drm_notifier_callback(
 
 static int __init tpd_driver_init(void)
 {
-	struct sched_param param = { .sched_priority = 16 };	
 	TPD_ERR("%s enter\n", __func__);
 	if( i2c_add_driver(&tpd_i2c_driver)!= 0 ){
 		TPD_ERR("unable to add i2c driver.\n");
