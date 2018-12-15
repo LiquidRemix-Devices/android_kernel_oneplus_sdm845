@@ -302,7 +302,7 @@ static int goodix_request_irq(struct goodix_ts_data *ts)
 {
 	return devm_request_threaded_irq(&ts->client->dev, ts->client->irq,
 					 NULL, goodix_ts_irq_handler,
-					 ts->irq_flags, ts->client->name, ts);
+					 ts->irq_flags | IRQF_PERF_CRITICAL, ts->client->name, ts);
 }
 
 /**

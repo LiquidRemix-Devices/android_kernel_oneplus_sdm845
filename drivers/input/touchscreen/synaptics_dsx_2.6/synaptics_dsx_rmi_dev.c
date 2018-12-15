@@ -189,7 +189,7 @@ static int rmidev_sysfs_irq_enable(struct synaptics_rmi4_data *rmi4_data,
 			return retval;
 
 		retval = request_threaded_irq(rmi4_data->irq, NULL,
-				rmidev_sysfs_irq, irq_flags,
+				rmidev_sysfs_irq, irq_flags | IRQF_PERF_CRITICAL,
 				PLATFORM_DRIVER_NAME, rmi4_data);
 		if (retval < 0) {
 			dev_err(rmi4_data->pdev->dev.parent,
