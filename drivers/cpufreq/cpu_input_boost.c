@@ -98,6 +98,11 @@ static u32 get_boost_freq(struct boost_drv *b, u32 cpu, u32 state)
 
 		return flex_boost_freq_hp;
 	}
+
+	if (cpumask_test_cpu(cpu, cpu_lp_mask))
+		return flex_boost_freq_lp;
+
+	return flex_boost_freq_hp;
 }
 
 static u32 get_min_freq(struct boost_drv *b, u32 cpu)
