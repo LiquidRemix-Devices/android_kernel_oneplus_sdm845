@@ -46,6 +46,7 @@
 #include <linux/timer.h>
 #include <linux/time.h>
 #include <linux/pm_wakeup.h>
+#include <linux/cpumask.h>
 
 /*modify by morgan.gu for sdm845 */
 #define CONFIG_MSM_RDM_NOTIFY
@@ -573,8 +574,9 @@ struct synaptics_ts_data {
 	unsigned int fp_aod_cnt;
 	unsigned int unlock_succes;
 	int project_version;
-
-	struct pm_qos_request pm_qos_req;
+	unsigned int l2pc_cpus_mask;
+	struct pm_qos_request l2pc_cpus_qos;
+	struct pm_qos_request pm_qos_req_dma;
 };
 
 static struct device_attribute attrs_oem[] = {
@@ -1998,7 +2000,7 @@ static void synaptics_ts_work_func(struct work_struct *work)
 	}
 
 	/* prevent CPU from entering deep sleep */
-	pm_qos_update_request(&ts->pm_qos_req, 100);
+	pm_qos_update_request(&ts->pm_qos_req_dma, 100);
 
 	ret = synaptics_rmi4_i2c_write_byte(ts->client, 0xff, 0x00 );
 	ret = synaptics_rmi4_i2c_read_word(ts->client, F01_RMI_DATA_BASE);
@@ -2071,7 +2073,7 @@ static void synaptics_ts_work_func(struct work_struct *work)
 
 
 END:
-	pm_qos_update_request(&ts->pm_qos_req, PM_QOS_DEFAULT_VALUE);
+	pm_qos_update_request(&ts->pm_qos_req_dma, PM_QOS_DEFAULT_VALUE);
 
 	//ret = set_changer_bit(ts);
 	touch_enable(ts);
@@ -5982,6 +5984,7 @@ static int synaptics_ts_probe(struct i2c_client *client, const struct i2c_device
 	unsigned long int  CURRENT_FIRMWARE_ID = 0;
 	uint32_t bootloader_mode;
 	uint32_t bootmode;
+	int cpu;
 
 	TPD_ERR("%s  is called\n",__func__);
 
@@ -6315,13 +6318,29 @@ static int synaptics_ts_probe(struct i2c_client *client, const struct i2c_device
 
 #ifdef CONFIG_SMP
 
-	ts->pm_qos_req.type = PM_QOS_REQ_AFFINE_IRQ;
-	ts->pm_qos_req.irq = ts->irq;;
+	ts->pm_qos_req_dma.type = PM_QOS_REQ_AFFINE_IRQ;
+	ts->pm_qos_req_dma.irq = ts->irq;;
 
 #endif
 
-	pm_qos_add_request(&ts->pm_qos_req, PM_QOS_CPU_DMA_LATENCY,
+	pm_qos_add_request(&ts->pm_qos_req_dma, PM_QOS_CPU_DMA_LATENCY,
 		PM_QOS_DEFAULT_VALUE);
+
+	if (ts->l2pc_cpus_mask) {
+
+		ts->l2pc_cpus_qos.type =
+				PM_QOS_REQ_AFFINE_CORES;
+		cpumask_empty(&ts->l2pc_cpus_qos.cpus_affine);
+		for_each_possible_cpu(cpu) {
+			if ((1 << cpu) & ts->l2pc_cpus_mask)
+				cpumask_set_cpu(cpu, &ts->
+						l2pc_cpus_qos.cpus_affine);
+		}
+
+		pm_qos_add_request(&ts->l2pc_cpus_qos,
+				PM_QOS_CPU_DMA_LATENCY,
+				PM_QOS_DEFAULT_VALUE);
+	}
 
 	TPDTM_DMESG("synaptics_ts_probe 3203: normal end\n");
 
@@ -6399,7 +6418,9 @@ static int synaptics_ts_remove(struct i2c_client *client)
 	kfree(ts);
 	tpd_power(ts,0);
 
-	pm_qos_remove_request(&ts->pm_qos_req);
+	pm_qos_remove_request(&ts->pm_qos_req_dma);
+	if (ts->l2pc_cpus_mask)
+		pm_qos_remove_request(&ts->l2pc_cpus_qos);
 
 	return 0;
 }
