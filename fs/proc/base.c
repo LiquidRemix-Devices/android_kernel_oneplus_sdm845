@@ -239,12 +239,12 @@ static ssize_t proc_pid_cmdline_read(struct file *file, char __user *buf,
 		goto out_mmput;
 	}
 
-	spin_lock(&mm->arg_lock);
+	down_read(&mm->mmap_sem);
 	arg_start = mm->arg_start;
 	arg_end = mm->arg_end;
 	env_start = mm->env_start;
 	env_end = mm->env_end;
-	spin_unlock(&mm->arg_lock);
+	up_read(&mm->mmap_sem);
 
 	BUG_ON(arg_start > arg_end);
 	BUG_ON(env_start > env_end);
@@ -977,10 +977,10 @@ static ssize_t environ_read(struct file *file, char __user *buf,
 	if (!atomic_inc_not_zero(&mm->mm_users))
 		goto free;
 
-	spin_lock(&mm->arg_lock);
+	down_read(&mm->mmap_sem);
 	env_start = mm->env_start;
 	env_end = mm->env_end;
-	spin_unlock(&mm->arg_lock);
+	up_read(&mm->mmap_sem);
 
 	while (count > 0) {
 		size_t this_len, max_len;
