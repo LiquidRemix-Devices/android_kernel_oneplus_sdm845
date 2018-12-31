@@ -360,7 +360,7 @@ CHECK		= sparse
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-OPTS			= -mcpu=cortex-a55 -stune=cortex-a55 -fmodulo-sched -fmodulo-sched-allow-regmoves -ftree-vectorize -ftree-slp-vectorize -fvect-cost-model -fgcse-after-reload -fgcse-sm -ffast-math -fsingle-precision-constant -Wno-ignored-optimization-argument -funsafe-math-optimizations \
+OPTS			= -mcpu=cortex-a55 -stune=cortex-a55 -mtune=cortex-a75 -stune=cortex-a55 -fmodulo-sched -fmodulo-sched-allow-regmoves -ftree-vectorize -ftree-slp-vectorize -fvect-cost-model -fgcse-after-reload -fgcse-sm -ffast-math -fsingle-precision-constant -Wno-ignored-optimization-argument -funsafe-math-optimizations \
 -fasynchronous-unwind-tables -fno-signed-zeros -fno-trapping-math -frename-registers -funroll-loops \
 
 NOSTDINC_FLAGS  =
@@ -668,12 +668,12 @@ KBUILD_CFLAGS	+= $(call cc-option,-Oz,-Os, Ofast)
 KBUILD_CFLAGS	+= $(call cc-disable-warning,maybe-uninitialized,)
 else
 ifdef CONFIG_PROFILE_ALL_BRANCHES
-KBUILD_CFLAGS	+= -Ofast  -mtune=cortex-a55  -funsafe-math-optimizations
+KBUILD_CFLAGS	+= -Ofast -mtune=cortex-a55 -mtune=cortex-a75 -funsafe-math-optimizations
 else
 ifeq ($(cc-name),clang)
-KBUILD_CFLAGS   += -Ofast  -mtune=cortex-a55  -funsafe-math-optimizations
+KBUILD_CFLAGS   += -Ofast -mtune=cortex-a55  -mtune=cortex-a75 -funsafe-math-optimizations
 else
-KBUILD_CFLAGS   += -Ofast  -mtune=cortex-a55  -funsafe-math-optimizations
+KBUILD_CFLAGS   += -Ofast -mtune=cortex-a55  -mtune=cortex-a75 -funsafe-math-optimizations
 endif
 endif
 endif
