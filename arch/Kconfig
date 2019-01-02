@@ -491,6 +491,14 @@ config THIN_ARCHIVES
 	  Select this if the architecture wants to use thin archives
 	  instead of ld -r to create the built-in.o files.
 
+config LD_GOLD
+	bool "Link the kernel with the ld.gold linker"
+	help
+	  This option makes the Kbuild system link the kernel image and
+	  composite objects with the ld.gold linker instead of the regular ld
+	  implementation, which is typically ld.bfd. This may be desired for
+	  linking speed, LTO, dead code elimination, or other reasons.
+
 config LD_DEAD_CODE_DATA_ELIMINATION
 	bool
 	help
