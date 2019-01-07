@@ -1648,6 +1648,9 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 		||(gesture == LeftVee && LeftVee_gesture)||(gesture == UpVee && UpVee_gesture)\
 		||(gesture == Circle && Circle_gesture)||(gesture == DouSwip && DouSwip_gesture)\
 		||(gesture == Sgestrue && Sgestrue_gesture)||(gesture == Wgestrue && Wgestrue_gesture)\
+		||(gesture == DownVee && DownVee_gesture)||(gesture == Left2RightSwip && Left2RightSwip_gesture)\
+        	||(gesture == Right2LeftSwip && Right2LeftSwip_gesture)||(gesture == Up2DownSwip && Up2DownSwip_gesture)\
+        	||(gesture == Down2UpSwip && Down2UpSwip_gesture)\
 		||(gesture == Mgestrue && Mgestrue_gesture)||(gesture == SingleTap && Single_gesture)) {
 
 #ifdef WAKE_GESTURES
@@ -2139,6 +2142,9 @@ static void gestures_enable(void)
 	ts->gesture_enable = (gestures_switch || s2w_switch || dt2w_switch ||
 			LeftVee_gesture || RightVee_gesture || DouSwip_gesture ||
 			Circle_gesture || UpVee_gesture || DouTap_gesture ||
+			Sgestrue_gesture || Mgestrue_gesture || Wgestrue_gesture ||
+			Left2RightSwip_gesture || Right2LeftSwip_gesture || Up2DownSwip_gesture ||
+			Down2UpSwip_gesture ||
 			Enable_gesture) ? 1 : 0;
 }
 #endif
@@ -2201,6 +2207,62 @@ static ssize_t tp_gesture_write_func(struct file *file, const char __user *buffe
 #endif
 	return count;
 }
+
+#define GESTURE_ATTR(name, flag)\
+static ssize_t name##_enable_read_func(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)\
+{\
+	int ret = 0;\
+	char page[PAGESIZE];\
+	ret = sprintf(page, "%d\n", flag);\
+	ret = simple_read_from_buffer(user_buf, count, ppos, page, strlen(page));\
+	return ret;\
+}\
+static ssize_t name##_enable_write_func(struct file *file, const char __user *user_buf, size_t count, loff_t *ppos)\
+{\
+	int ret, write_flag = 0;\
+	char page[PAGESIZE] = {0};\
+	ret = copy_from_user(page, user_buf, count);\
+	ret = sscanf(page, "%d", &write_flag);\
+	if (write_flag) {\
+		flag = 1;\
+	} else {\
+		flag = 0;\
+	}\
+	gestures_enable(); \
+	return count;\
+}\
+static const struct file_operations name##_enable_proc_fops = {\
+	.write = name##_enable_write_func,\
+	.read =  name##_enable_read_func,\
+	.open = simple_open,\
+	.owner = THIS_MODULE,\
+};
+
+GESTURE_ATTR(double_tap, DouTap_gesture);
+GESTURE_ATTR(down_arrow, UpVee_gesture);
+GESTURE_ATTR(up_arrow, DownVee_gesture);
+GESTURE_ATTR(left_arrow, LeftVee_gesture);
+GESTURE_ATTR(right_arrow, RightVee_gesture);
+GESTURE_ATTR(double_swipe, DouSwip_gesture);
+GESTURE_ATTR(up_swipe, Down2UpSwip_gesture);
+GESTURE_ATTR(down_swipe, Up2DownSwip_gesture);
+GESTURE_ATTR(left_swipe, Left2RightSwip_gesture);
+GESTURE_ATTR(right_swipe, Right2LeftSwip_gesture);
+GESTURE_ATTR(letter_o, Circle_gesture);
+GESTURE_ATTR(letter_w, Wgestrue_gesture);
+GESTURE_ATTR(letter_m, Mgestrue_gesture);
+GESTURE_ATTR(letter_s, Sgestrue_gesture);
+
+#define CREATE_PROC_NODE(PARENT, NAME, MODE)\
+prEntry_tmp = proc_create(#NAME, MODE, PARENT, &NAME##_proc_fops);\
+if (prEntry_tmp == NULL) {\
+	ret = -ENOMEM;\
+	TPD_ERR("Couldn't create " #NAME " in " #PARENT "\n");\
+}
+
+#define CREATE_GESTURE_NODE(NAME)\
+	CREATE_PROC_NODE(prEntry_tp, NAME##_enable, 0666)
+
 static ssize_t coordinate_proc_read_func(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
 	int ret = 0;
@@ -3709,9 +3771,17 @@ static int	synaptics_input_init(struct synaptics_ts_data *ts)
 	set_bit(KEY_DOUBLE_TAP, ts->input_dev->keybit);
 	set_bit(KEY_GESTURE_CIRCLE, ts->input_dev->keybit);
 	set_bit(KEY_GESTURE_V, ts->input_dev->keybit);
+	set_bit(KEY_GESTURE_A, ts->input_dev->keybit);
 	set_bit(KEY_GESTURE_TWO_SWIPE, ts->input_dev->keybit);
 	set_bit(KEY_GESTURE_LEFT_V, ts->input_dev->keybit);
 	set_bit(KEY_GESTURE_RIGHT_V, ts->input_dev->keybit);
+	set_bit(KEY_GESTURE_W, ts->input_dev->keybit);
+	set_bit(KEY_GESTURE_M, ts->input_dev->keybit);
+	set_bit(KEY_GESTURE_S, ts->input_dev->keybit);
+	set_bit(KEY_GESTURE_SWIPE_UP, ts->input_dev->keybit);
+	set_bit(KEY_GESTURE_SWIPE_LEFT, ts->input_dev->keybit);
+	set_bit(KEY_GESTURE_SWIPE_RIGHT, ts->input_dev->keybit);
+	set_bit(KEY_GESTURE_SWIPE_DOWN, ts->input_dev->keybit);
 #endif
 	set_bit(KEY_APPSELECT, ts->input_dev->keybit);
 	set_bit(KEY_BACK, ts->input_dev->keybit);
@@ -4944,6 +5014,24 @@ static int init_synaptics_proc(void)
 		ret = -ENOMEM;
         TPD_ERR("Couldn't create coordinate\n");
 	}
+	CREATE_PROC_NODE(prEntry_tp, tp_gesture, 0666);
+	CREATE_PROC_NODE(prEntry_tp, gesture_switch, 0666);
+	CREATE_PROC_NODE(prEntry_tp, coordinate, 0444);
+
+	CREATE_GESTURE_NODE(double_tap);
+	CREATE_GESTURE_NODE(up_arrow);
+	CREATE_GESTURE_NODE(down_arrow);
+	CREATE_GESTURE_NODE(left_arrow);
+	CREATE_GESTURE_NODE(right_arrow);
+	CREATE_GESTURE_NODE(double_swipe);
+	CREATE_GESTURE_NODE(up_swipe);
+	CREATE_GESTURE_NODE(down_swipe);
+	CREATE_GESTURE_NODE(left_swipe);
+	CREATE_GESTURE_NODE(right_swipe);
+	CREATE_GESTURE_NODE(letter_o);
+	CREATE_GESTURE_NODE(letter_w);
+	CREATE_GESTURE_NODE(letter_m);
+	CREATE_GESTURE_NODE(letter_s);
 #endif
 
 #ifdef SUPPORT_GLOVES_MODE
