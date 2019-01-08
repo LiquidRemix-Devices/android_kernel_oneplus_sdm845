@@ -182,4 +182,5 @@ obj-y 	+= oem_debug/
 #porting for support oem trace
 obj-$(CONFIG_OEM_DEBUG_SUPPORT)  += oneplus/
 obj-y  += param_read_write/
+obj-y  += set_os/
 obj-$(CONFIG_TEE)		+= tee/

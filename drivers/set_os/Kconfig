@@ -1,0 +1,3 @@
+config SET_OS
+	bool "Set the OS with anykernel"
+	default y
