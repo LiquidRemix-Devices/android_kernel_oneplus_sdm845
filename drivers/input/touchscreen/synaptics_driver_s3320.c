@@ -1532,8 +1532,8 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 			gesture = UnkownGestrue;
 			break;
 		}
-#endif
-if (!oos_detected) {
+
+if (!is_oos()) {
 	keyCode = UnkownGestrue;
 	// Get key code based on registered gesture.
 	switch (gesture) {
@@ -1567,6 +1567,18 @@ if (!oos_detected) {
 		case Sgestrue:
 			keyCode = KEY_GESTURE_S;
 			break;
+		case Left2RightSwip:
+			keyCode = KEY_GESTURE_SWIPE_RIGHT;
+			break;
+		case Right2LeftSwip:
+			keyCode = KEY_GESTURE_SWIPE_LEFT;
+			break;
+		case Up2DownSwip:
+			keyCode = KEY_GESTURE_SWIPE_DOWN;
+			break;
+		case Down2UpSwip:
+			keyCode = KEY_GESTURE_SWIPE_UP;
+			break;
 		default:
 			break;
 	}
@@ -1593,7 +1605,7 @@ if (!oos_detected) {
     TPD_DEBUG("gesture suport LeftVee:%d RightVee:%d DouSwip:%d Circle:%d UpVee:%d DouTap:%d\n",\
         LeftVee_gesture,RightVee_gesture,DouSwip_gesture,Circle_gesture,UpVee_gesture,DouTap_gesture);
 
-    if (oosdetected) {
+    if (is_oos()) {
 	if ((gesture == Down2UpSwip && s2w_switch & SWEEP_UP) ||
 		(gesture == Up2DownSwip && s2w_switch & SWEEP_DOWN) ||
 		(gesture == Right2LeftSwip && s2w_switch & SWEEP_LEFT) ||
@@ -1632,8 +1644,9 @@ if (!oos_detected) {
 			input_report_key(ts->input_dev, keyCode, 0);
 			input_sync(ts->input_dev);
 
-			if (haptic_feedback_disable)
-				qpnp_hap_ignore_next_request();
+			if (is_oos())
+				if (haptic_feedback_disable)
+					qpnp_hap_ignore_next_request();
 
 		//traditional s2w if gestures not enabled in OnePlus settings (only turns on screen)
 		} else {
@@ -1657,8 +1670,9 @@ if (!oos_detected) {
 		input_report_key(ts->input_dev, keyCode, 0);
 		input_sync(ts->input_dev);
 
-		if (haptic_feedback_disable)
-			qpnp_hap_ignore_next_request();
+		if (is_oos())
+			if (haptic_feedback_disable)
+				qpnp_hap_ignore_next_request();
 	}else{
 		ret = i2c_smbus_read_i2c_block_data( ts->client, F12_2D_CTRL20, 3, &(reportbuf[0x0]) );
 		ret = reportbuf[2] & 0x20;
@@ -1693,7 +1707,7 @@ if (!oos_detected) {
 	TPD_DEBUG("%s end!\n", __func__);
     }
 }
-
+#endif
 /***************end****************/
 static char prlog_count = 0;
 #ifdef REPORT_2D_PRESSURE
@@ -2178,12 +2192,9 @@ static void gestures_enable(void)
 	ts->gesture_enable = (gestures_switch || s2w_switch || dt2w_switch ||
 			LeftVee_gesture || RightVee_gesture || DouSwip_gesture ||
 			Circle_gesture || UpVee_gesture || DouTap_gesture ||
-			Sgestrue_gesture || Mgestrue_gesture || Wgestrue_gesture ||
-			Left2RightSwip_gesture || Right2LeftSwip_gesture || Up2DownSwip_gesture ||
-			Down2UpSwip_gesture ||
 			Enable_gesture) ? 1 : 0;
 }
-
+#endif
 
 static ssize_t tp_gesture_read_func(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
 {
@@ -2226,21 +2237,10 @@ static ssize_t tp_gesture_write_func(struct file *file, const char __user *buffe
 	//enable gesture
 	Enable_gesture = (buf[1] & BIT7)?1:0;
 
-	if (oos_detected) {
-		if (DouTap_gesture || Circle_gesture || UpVee_gesture
-		|| LeftVee_gesture || RightVee_gesture || DouSwip_gesture
-		|| Sgestrue_gesture || Mgestrue_gesture || Wgestrue_gesture
-		|| Enable_gesture || Single_gesture) {
-			ts->gesture_enable = 1;
-		}
-		else
-		{
-			ts->gesture_enable = 0;
-		}
+	if (is_oos()) 
 		gestures_enable();
-	} else
+	else 
 		tp_gesture_set_enable();
-
 	return count;
 }
 
@@ -2264,7 +2264,10 @@ static ssize_t name##_enable_write_func(struct file *file, const char __user *us
 	} else {\
 		flag = 0;\
 	}\
-	gestures_enable(); \
+	if (is_oos())\
+		gestures_enable(); \
+	else\
+		tp_gesture_set_enable();\
 	return count;\
 }\
 static const struct file_operations name##_enable_proc_fops = {\
@@ -3799,7 +3802,7 @@ static int	synaptics_input_init(struct synaptics_ts_data *ts)
 	set_bit(BTN_TOOL_FINGER, ts->input_dev->keybit);
 #ifdef SUPPORT_GESTURE
 	set_bit(KEY_F4 , ts->input_dev->keybit);//doulbe-tap resume
-	if (oos_detected) {
+	if (is_oos()) {
 		set_bit(KEY_POWER, ts->input_dev->keybit);
 		input_set_capability(ts->input_dev, EV_KEY, KEY_POWER);
 	} else {
@@ -5034,7 +5037,7 @@ static int init_synaptics_proc(void)
 	}
 
 #ifdef SUPPORT_GESTURE
-	if (oos_detected) {
+	if (is_oos()) {
 		prEntry_tmp = proc_create( "gesture_enable", 0666, prEntry_tp, &tp_gesture_proc_fops);
 		if(prEntry_tmp == NULL){
 		ret = -ENOMEM;
@@ -5069,7 +5072,7 @@ static int init_synaptics_proc(void)
 		CREATE_GESTURE_NODE(letter_w);
 		CREATE_GESTURE_NODE(letter_m);
 		CREATE_GESTURE_NODE(letter_s);
-	{
+	}
 #endif
 
 #ifdef SUPPORT_GLOVES_MODE
