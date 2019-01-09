@@ -1544,7 +1544,7 @@ if (!is_oos()) {
 			keyCode = KEY_GESTURE_V;
 			break;
 		case DownVee:
-			keyCode = KEY_GESTURE_V;
+			keyCode = KEY_GESTURE_A;
 			break;
 		case LeftVee:
 			keyCode = KEY_GESTURE_RIGHT_V;
@@ -3821,9 +3821,9 @@ static int	synaptics_input_init(struct synaptics_ts_data *ts)
 		set_bit(KEY_GESTURE_SWIPE_RIGHT, ts->input_dev->keybit);
 		set_bit(KEY_GESTURE_SWIPE_DOWN, ts->input_dev->keybit);
 	}
+#endif
 	set_bit(KEY_APPSELECT, ts->input_dev->keybit);
 	set_bit(KEY_BACK, ts->input_dev->keybit);
-#endif
 	/* For multi touch */
 	input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MAJOR, 0, 255, 0, 0);
 	input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MINOR, 0,255, 0, 0);
@@ -6488,8 +6488,10 @@ static int synaptics_ts_probe(struct i2c_client *client, const struct i2c_device
 	return 0;
 
 #ifdef WAKE_GESTURES
-err_gesture_dev:
-	input_free_device(gesture_dev);
+if (is_oos()) {
+	err_gesture_dev:
+		input_free_device(gesture_dev);
+}
 #endif
 exit_init_failed:
 	free_irq(client->irq,ts);

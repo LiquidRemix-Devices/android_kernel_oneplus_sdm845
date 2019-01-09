@@ -29,6 +29,7 @@
 #include <linux/state_notifier.h>
 #endif
 #include "exposure_adjustment.h"
+#include <linux/set_os.h>
 /**
  * topology is currently defined by a set of following 3 values:
  * 1. num of layer mixers
@@ -3950,33 +3951,54 @@ int dsi_panel_enable(struct dsi_panel *panel)
 	panel->panel_initialized = true;
 	pr_err("aod_mode =%d\n",panel->aod_mode);
 	mutex_unlock(&panel->panel_lock);
-	if(panel->aod_mode==2){
-		rc = dsi_panel_set_aod_mode(panel, 2);
-		}
-	if(panel->aod_mode==2){
-		panel->aod_status=1;
-		}
-	if(panel->aod_mode==0){
-	rc = dsi_panel_set_aod_mode(panel, 0);
-		panel->aod_status=0;
-		}
-	if (panel->srgb_mode)
-		{
-			  dsi_panel_set_srgb_mode(panel, panel->srgb_mode);
-			  }
-		  if (panel->dci_p3_mode){
+	if (is_oos()) {
+		if(panel->aod_mode==2){
+			rc = dsi_panel_set_aod_mode(panel, 2);
+			}
+		if(panel->aod_mode==2){
+			panel->aod_status=1;
+			}
+		if(panel->aod_mode==0){
+			rc = dsi_panel_set_aod_mode(panel, 0);
+			panel->aod_status=0;
+			}
+		if (panel->srgb_mode) {
+			dsi_panel_set_srgb_mode(panel, panel->srgb_mode);
+			}
+		if (panel->dci_p3_mode) {
 		  	printk(KERN_ERR"Z2\n");
-			  dsi_panel_set_dci_p3_mode(panel, panel->dci_p3_mode);
-			  }
-		  if (panel->night_mode){
+			dsi_panel_set_dci_p3_mode(panel, panel->dci_p3_mode);
+			}
+		  if (panel->night_mode) {
 		  	printk(KERN_ERR"Z3\n");
-			  dsi_panel_set_night_mode(panel, panel->night_mode);
-			  }
-		  if (panel->adaption_mode){
+			dsi_panel_set_night_mode(panel, panel->night_mode);
+			}
+		  if (panel->adaption_mode) {
 		  	printk(KERN_ERR"Z4\n");
-			  dsi_panel_set_adaption_mode(panel, panel->adaption_mode);
-			  }
+			dsi_panel_set_adaption_mode(panel, panel->adaption_mode);
+			}
+	} else {
+		        if (panel->acl_mode)
+           			dsi_panel_set_acl_mode(panel, panel->acl_mode);
 
+        		if (panel->srgb_mode)
+            			dsi_panel_set_srgb_mode(panel, panel->srgb_mode);
+
+        		if (panel->dci_p3_mode)
+            			dsi_panel_set_dci_p3_mode(panel, panel->dci_p3_mode);
+
+        		if (panel->night_mode)
+            			dsi_panel_set_night_mode(panel, panel->night_mode);
+
+        		if (panel->oneplus_mode)
+            			dsi_panel_set_oneplus_mode(panel, panel->oneplus_mode);
+
+        		if (panel->adaption_mode)
+            			dsi_panel_set_adaption_mode(panel, panel->adaption_mode);
+
+        		if (panel->hbm_mode)
+            			dsi_panel_set_hbm_mode(panel, panel->hbm_mode);
+	}
 	pr_err("end\n");
 	pm_print_active_wakeup_sources_queue(false);
 	return rc;
