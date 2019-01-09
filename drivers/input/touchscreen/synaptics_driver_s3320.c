@@ -1644,9 +1644,8 @@ if (!is_oos()) {
 			input_report_key(ts->input_dev, keyCode, 0);
 			input_sync(ts->input_dev);
 
-			if (is_oos())
-				if (haptic_feedback_disable)
-					qpnp_hap_ignore_next_request();
+			if (haptic_feedback_disable)
+				qpnp_hap_ignore_next_request();
 
 		//traditional s2w if gestures not enabled in OnePlus settings (only turns on screen)
 		} else {
@@ -1670,9 +1669,8 @@ if (!is_oos()) {
 		input_report_key(ts->input_dev, keyCode, 0);
 		input_sync(ts->input_dev);
 
-		if (is_oos())
-			if (haptic_feedback_disable)
-				qpnp_hap_ignore_next_request();
+		if (haptic_feedback_disable)
+			qpnp_hap_ignore_next_request();
 	}else{
 		ret = i2c_smbus_read_i2c_block_data( ts->client, F12_2D_CTRL20, 3, &(reportbuf[0x0]) );
 		ret = reportbuf[2] & 0x20;

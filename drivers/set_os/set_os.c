@@ -20,4 +20,4 @@ static int __init set__custom_os(char *cmdline)
 	oos_detected = 0;
 	return 0;
 }
-__setup("is_custom_os", set__custom_os);
+__setup("is_custom_rom", set__custom_os);
