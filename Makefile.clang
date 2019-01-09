@@ -657,6 +657,7 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning, unused-variable)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, parentheses)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, strlcpy-strlcat-size)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, unused-function)
+KBUILD_CFLAGS	+= $(call cc-disable-warning, visibility)
 
 ifdef CONFIG_LD_DEAD_CODE_DATA_ELIMINATION
 KBUILD_CFLAGS	+= $(call cc-option,-ffunction-sections,)
