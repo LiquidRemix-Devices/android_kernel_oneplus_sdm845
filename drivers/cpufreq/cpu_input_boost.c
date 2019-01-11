@@ -35,7 +35,7 @@ module_param(dynamic_stune_boost, short, 0644);
 module_param(input_stune_boost, short, 0644);
 module_param(max_stune_boost, short, 0644);
 module_param(general_stune_boost, short, 0644);
-module_param(flex_stune_boost, int, 0644);
+module_param(flex_stune_boost, short, 0644);
 #endif
 
 module_param(input_boost_freq_lp, uint, 0644);
