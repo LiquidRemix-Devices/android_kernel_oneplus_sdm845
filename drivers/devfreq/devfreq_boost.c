@@ -318,19 +318,21 @@ static void devfreq_max_unboost(struct work_struct *work)
 }
 
 static int msm_drm_notifier_cb(struct notifier_block *nb,
-	unsigned long action, void *data)
+	unsigned long event, void *data)
 {
 	struct df_boost_drv *d = container_of(nb, typeof(*d), msm_drm_notif);
 	struct msm_drm_notifier *evdata = data;
-	int *blank = evdata->data;
 	bool screen_awake;
+	int blank;
+
+	blank = *(int *)(evdata->data);	
 
 	/* Parse framebuffer blank events as soon as they occur */
-	if (action != MSM_DRM_EARLY_EVENT_BLANK)
+	if (event != MSM_DRM_EARLY_EVENT_BLANK)
 		return NOTIFY_OK;
 
 	/* Boost when the screen turns on and unboost when it turns off */
-	screen_awake = *blank == MSM_DRM_BLANK_UNBLANK_CUST;
+	screen_awake = blank == MSM_DRM_BLANK_UNBLANK_CUST;
 	devfreq_disable_boosting(d, !screen_awake);
 	if (screen_awake) {
 		int i;

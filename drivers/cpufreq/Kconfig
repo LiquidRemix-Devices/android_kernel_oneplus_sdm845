@@ -482,8 +482,8 @@ config INPUT_BOOST_FREQ_PERF
 	help
 	  Input boost frequency for the performance CPU cluster.
 
-config INPUT_BOOST_STUNE_LEVEL
-	int "Foreground app schedtune input boost level"
+config INPUT_BOOST_STUNE_OFFSET
+	int "Foreground app schedtune input boost offset"
 	depends on DYNAMIC_STUNE_BOOST
 	default "25"
 	help
@@ -544,8 +544,8 @@ config FLEX_BOOST_DURATION_MS
 	help
 	  Input boost duration in milliseconds.
 
-config GENERAL_BOOST_STUNE_LEVEL
-	int "Foreground app schedtune general boost level"
+config GENERAL_BOOST_STUNE_OFFSET
+	int "Foreground app schedtune general boost offset
 	depends on DYNAMIC_STUNE_BOOST
 	default "10"
 	help
@@ -556,8 +556,8 @@ config GENERAL_BOOST_STUNE_LEVEL
 	  accepted for testing purposes. A value of 0 disables SchedTune
 	  boosting for this level.
 
-config FLEX_BOOST_STUNE_LEVEL
-	int "Foreground app schedtune max boost level"
+config FLEX_BOOST_STUNE_OFFSET
+	int "Foreground app schedtune max boost offset"
 	depends on DYNAMIC_STUNE_BOOST
 	default "20"
 	help
@@ -568,8 +568,8 @@ config FLEX_BOOST_STUNE_LEVEL
 	  accepted for testing purposes. A value of 0 disables SchedTune
 	  boosting for this level.
 
-config MAX_BOOST_STUNE_LEVEL
-	int "Foreground app schedtune max boost level"
+config MAX_BOOST_STUNE_OFFSET
+	int "Foreground app schedtune max boost offset"
 	depends on DYNAMIC_STUNE_BOOST
 	default "50"
 	help

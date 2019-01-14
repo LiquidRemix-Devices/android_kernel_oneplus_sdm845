@@ -27,15 +27,15 @@ static __read_mostly unsigned int flex_boost_freq_hp = CONFIG_FLEX_BOOST_FREQ_PE
 static bool stune_boost_active;
 static int boost_slot;
 static __read_mostly unsigned short dynamic_stune_boost=20;
-static __read_mostly unsigned short input_stune_boost = CONFIG_INPUT_BOOST_STUNE_LEVEL;
-static __read_mostly unsigned short max_stune_boost = CONFIG_MAX_BOOST_STUNE_LEVEL;
-static __read_mostly unsigned short general_stune_boost = CONFIG_GENERAL_BOOST_STUNE_LEVEL;
-static __read_mostly unsigned short flex_stune_boost = CONFIG_FLEX_BOOST_STUNE_LEVEL;
+static __read_mostly unsigned short input_stune_boost_offset = CONFIG_INPUT_BOOST_STUNE_OFFSET;
+static __read_mostly unsigned short max_stune_boost_offset = CONFIG_MAX_BOOST_STUNE_OFFSET;
+static __read_mostly unsigned short general_stune_boost_offset = CONFIG_GENERAL_BOOST_STUNE_OFFSET;
+static __read_mostly unsigned short flex_stune_boost_offset = CONFIG_FLEX_BOOST_STUNE_OFFSET;
 module_param(dynamic_stune_boost, short, 0644);
-module_param(input_stune_boost, short, 0644);
-module_param(max_stune_boost, short, 0644);
-module_param(general_stune_boost, short, 0644);
-module_param(flex_stune_boost, short, 0644);
+module_param(input_stune_boost_offset, short, 0644);
+module_param(max_stune_boost_offset, short, 0644);
+module_param(general_stune_boost_offset, short, 0644);
+module_param(flex_stune_boost_offset, short, 0644);
 #endif
 
 module_param(input_boost_freq_lp, uint, 0644);
@@ -284,7 +284,7 @@ static void input_boost_worker(struct work_struct *work)
 		update_online_cpu_policy();
 	}
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-	if (!do_stune_boost("top-app", dynamic_stune_boost + input_stune_boost, &boost_slot))
+	if (!do_stune_boost("top-app", dynamic_stune_boost + input_stune_boost_offset, &boost_slot))
 		stune_boost_active = true;
 #endif
 	queue_delayed_work(b->wq, &b->input_unboost,
@@ -315,7 +315,7 @@ static void max_boost_worker(struct work_struct *work)
 		update_online_cpu_policy();
 	}
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-	if (!do_stune_boost("top-app", dynamic_stune_boost + max_stune_boost, &boost_slot))
+	if (!do_stune_boost("top-app", dynamic_stune_boost + max_stune_boost_offset, &boost_slot))
 		stune_boost_active = true;
 #endif
 	queue_delayed_work(b->wq, &b->max_unboost,
@@ -346,7 +346,7 @@ static void general_boost_worker(struct work_struct *work)
 		update_online_cpu_policy();
 	}
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-	if (!do_stune_boost("top-app", dynamic_stune_boost + general_stune_boost, &boost_slot))
+	if (!do_stune_boost("top-app", dynamic_stune_boost + general_stune_boost_offset, &boost_slot))
 		stune_boost_active = true;
 #endif
 	queue_delayed_work(b->wq, &b->general_unboost,
@@ -376,7 +376,7 @@ static void flex_boost_worker(struct work_struct *work)
 		update_online_cpu_policy();
 	}
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-	if (!do_stune_boost("top-app", dynamic_stune_boost + flex_stune_boost, &boost_slot))
+	if (!do_stune_boost("top-app", dynamic_stune_boost + flex_stune_boost_offset, &boost_slot))
 		stune_boost_active = true;
 #endif
 	queue_delayed_work(b->wq, &b->flex_unboost,
@@ -436,18 +436,20 @@ static int cpu_notifier_cb(struct notifier_block *nb,
 }
 
 static int msm_drm_notifier_cb(struct notifier_block *nb,
-	unsigned long action, void *data)
+	unsigned long event, void *data)
 {
 	struct boost_drv *b = container_of(nb, typeof(*b), msm_drm_notif);
 	struct msm_drm_notifier *evdata = data;
-	int *blank = evdata->data;
+	int blank;
+
+	blank = *(int *)(evdata->data);	
 
 	/* Parse framebuffer blank events as soon as they occur */
-	if (action != MSM_DRM_EARLY_EVENT_BLANK)
+	if (event != MSM_DRM_EARLY_EVENT_BLANK)
 		return NOTIFY_OK;
 
 	/* Boost when the screen turns on and unboost when it turns off */
-	if (*blank == MSM_DRM_BLANK_UNBLANK_CUST) {
+	if (blank == MSM_DRM_BLANK_UNBLANK_CUST) {
 		set_boost_bit(b, SCREEN_AWAKE);
 		__cpu_input_boost_kick_max(b, CONFIG_WAKE_BOOST_DURATION_MS, 0);
 
