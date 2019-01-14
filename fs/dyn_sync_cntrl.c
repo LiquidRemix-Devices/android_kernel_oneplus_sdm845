@@ -116,13 +116,16 @@ static int dyn_fsync_notify_sys(struct notifier_block *this, unsigned long code,
 }
 
 static int msm_drm_notifier_cb(struct notifier_block *nb,
-	unsigned long action, void *data)
+	unsigned long event, void *data)
 {
 	struct msm_drm_notifier *evdata = data;
-	int *blank = evdata->data;
+	int blank;
 
-	
-	if (action != MSM_DRM_EARLY_EVENT_BLANK) {
+	blank = *(int *)(evdata->data);	
+
+	if (((blank == MSM_DRM_BLANK_POWERDOWN)
+		&& (event == MSM_DRM_EARLY_EVENT_BLANK))
+		|| (blank == MSM_DRM_BLANK_NORMAL)) {
 		mutex_lock(&fsync_mutex);
 		suspend_active = false;
 
@@ -134,7 +137,8 @@ static int msm_drm_notifier_cb(struct notifier_block *nb,
 		mutex_unlock(&fsync_mutex);
 	}
 			
-	if (*blank == MSM_DRM_BLANK_UNBLANK_CUST) {
+	if ((blank == MSM_DRM_BLANK_UNBLANK_CUST)
+		&& (event == MSM_DRM_EARLY_EVENT_BLANK)) {
 		mutex_lock(&fsync_mutex);
 		suspend_active = true;
 		mutex_unlock(&fsync_mutex);

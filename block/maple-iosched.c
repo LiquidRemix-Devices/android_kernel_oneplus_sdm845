@@ -264,18 +264,23 @@ maple_latter_request(struct request_queue *q, struct request *rq)
 }
 
 static int msm_drm_notifier_cb(struct notifier_block *nb,
-	unsigned long action, void *data)
+	unsigned long event, void *data)
 {
 
 	struct maple_data *mdata = container_of(nb,
 				struct maple_data, msm_drm_notif);
 	struct msm_drm_notifier *evdata = data;
-	int *blank = evdata->data;
+	int blank;
 
- 	if (action != MSM_DRM_EARLY_EVENT_BLANK) 
+	blank = *(int *)(evdata->data);	
+
+ 	if (((blank == MSM_DRM_BLANK_POWERDOWN)
+		&& (event == MSM_DRM_EARLY_EVENT_BLANK))
+		|| (blank == MSM_DRM_BLANK_NORMAL))
 		mdata->display_on = false;
 
-	if (*blank == MSM_DRM_BLANK_UNBLANK_CUST) 
+	if ((blank == MSM_DRM_BLANK_UNBLANK_CUST)
+		&& (event == MSM_DRM_EARLY_EVENT_BLANK))
 		mdata->display_on = true;
 	
  	return 0;
