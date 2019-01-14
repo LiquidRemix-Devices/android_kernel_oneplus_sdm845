@@ -831,7 +831,6 @@ static ssize_t silver_suspend_max_freq_store(struct gov_attr_set *attr_set,
 				      const char *buf, size_t count)
 {
 	struct smugov_tunables *tunables = to_smugov_tunables(attr_set);
-	struct smugov_policy *sg_policy;
 	unsigned int max_freq;
 
 	if (kstrtouint(buf, 10, &max_freq))
@@ -853,7 +852,6 @@ static ssize_t gold_suspend_max_freq_store(struct gov_attr_set *attr_set,
 				      const char *buf, size_t count)
 {
 	struct smugov_tunables *tunables = to_smugov_tunables(attr_set);
-	struct smugov_policy *sg_policy;
 	unsigned int max_freq;
 
 	if (kstrtouint(buf, 10, &max_freq))
@@ -875,7 +873,6 @@ static ssize_t suspend_capacity_factor_store(struct gov_attr_set *attr_set,
 				      const char *buf, size_t count)
 {
 	struct smugov_tunables *tunables = to_smugov_tunables(attr_set);
-	struct smugov_policy *sg_policy;
 	unsigned int factor;
 
 	if (kstrtouint(buf, 10, &factor))
