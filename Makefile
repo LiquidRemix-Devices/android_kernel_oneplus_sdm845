@@ -417,7 +417,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-int-in-bool-context -Wno-parentheses -Wno-switch-unreachable -Wno-stringop-overflow -Wno-format-overflow \
                    -Wno-nonnull -Wno-shift-overflow -fno-asynchronous-unwind-tables \
 		   -floop-nest-optimize -fgraphite-identity -fgcse-sm -fwrapv \
-		   -ftree-loop-distribution -mno-fix-cortex-a53-835769 \
+		   -ftree-loop-distribution \
 		   -fgcse-las -fbranch-target-load-optimize -fipa-pta -ftracer \
 		   -flive-range-shrinkage -fvariable-expansion-in-unroller \
 		   -ffast-math -funsafe-math-optimizations
