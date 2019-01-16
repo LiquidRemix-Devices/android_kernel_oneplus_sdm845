@@ -566,7 +566,7 @@ static ssize_t oneplus_mode_show(struct device *dev,
 
 	oneplus_mode = dsi_display_get_oneplus_mode(connector);
 
-	is (is_oos())
+	if (is_oos())
 		ret = scnprintf(buf, PAGE_SIZE, "oneplus mode = %d\n"
 											"0--oneplus mode Off\n"
 											"1--oneplus mode On\n",
