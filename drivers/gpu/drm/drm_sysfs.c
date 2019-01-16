@@ -30,6 +30,7 @@
 #include <linux/init.h>
 #include <drm/drm_mipi_dsi.h>
 #include <msm/dsi-staging/exposure_adjustment.h>
+#include <linux/set_os.h>
 
 #define to_drm_minor(d) dev_get_drvdata(d)
 #define to_drm_connector(d) dev_get_drvdata(d)
@@ -232,12 +233,16 @@ static ssize_t acl_show(struct device *dev,
 
 	acl_mode = dsi_display_get_acl_mode(connector);
 
-	ret = scnprintf(buf, PAGE_SIZE, "acl mode = %d\n"
+	if (is_oos()) 
+		ret = scnprintf(buf, PAGE_SIZE, "acl mode = %d\n"
 											"0--acl mode(off)\n"
 											"1--acl mode(5)\n"
 											"2--acl mode(10)\n"
 											"3--acl mode(15)\n",
 											acl_mode);
+	else 
+		ret = scnprintf(buf, PAGE_SIZE, "%d\n", acl_mode);
+
 	return ret;
 }
 
@@ -270,7 +275,8 @@ static ssize_t hbm_show(struct device *dev,
 
 	hbm_mode = dsi_display_get_hbm_mode(connector);
 
-	ret = scnprintf(buf, PAGE_SIZE, "hbm mode = %d\n"
+	if (is_oos)
+		ret = scnprintf(buf, PAGE_SIZE, "hbm mode = %d\n"
 											"0--hbm mode(off)\n"
 											"1--hbm mode(464)\n"
 											"2--hbm mode(498)\n"
@@ -280,6 +286,9 @@ static ssize_t hbm_show(struct device *dev,
 											"7--hbm max mode(600)\n"
 											"8--hbm max off \n",
 											hbm_mode);
+	else
+		ret = scnprintf(buf, PAGE_SIZE, "%d\n", hbm_mode);
+
 	return ret;
 }
 
@@ -378,11 +387,15 @@ static ssize_t aod_disable_show(struct device *dev,
 	int aod_disable = 0;
 
 	aod_disable = dsi_display_get_aod_disable(connector);
-
-	ret = scnprintf(buf, PAGE_SIZE, "AOD disable = %d\n"
+	
+	if (is_oos())
+		ret = scnprintf(buf, PAGE_SIZE, "AOD disable = %d\n"
 											"0--AOD enable\n"
 											"1--AOD disable\n",
 											aod_disable);
+	else
+		ret = scnprintf(buf, PAGE_SIZE, "%d\n", aod_disable); 
+
 	return ret;
 }
 
@@ -415,10 +428,14 @@ static ssize_t SRGB_show(struct device *dev,
 
 	srgb_mode = dsi_display_get_srgb_mode(connector);
 
-	ret = scnprintf(buf, PAGE_SIZE, "sRGB mode = %d\n"
+	if (is_oos())
+		ret = scnprintf(buf, PAGE_SIZE, "sRGB mode = %d\n"
 											"0--sRGB mode Off\n"
 											"1--sRGB mode On\n",
 											srgb_mode);
+	else
+		ret = scnprintf(buf, PAGE_SIZE, "%d\n", srgb_mode);
+
 	return ret;
 }
 
@@ -456,11 +473,15 @@ static ssize_t DCI_P3_show(struct device *dev,
 	int dci_p3_mode = 0;
 
 	dci_p3_mode = dsi_display_get_dci_p3_mode(connector);
-
-	ret = scnprintf(buf, PAGE_SIZE, "dci-p3 mode = %d\n"
+	
+	if (is_oos())
+		ret = scnprintf(buf, PAGE_SIZE, "dci-p3 mode = %d\n"
 											"0--dci-p3 mode Off\n"
 											"1--dci-p3 mode On\n",
 											dci_p3_mode);
+	else
+		ret = scnprintf(buf, PAGE_SIZE, "%d\n", dci_p3_mode);
+	
 	return ret;
 }
 
@@ -498,11 +519,15 @@ static ssize_t night_mode_show(struct device *dev,
 	int night_mode = 0;
 
 	night_mode = dsi_display_get_night_mode(connector);
-
-	ret = scnprintf(buf, PAGE_SIZE, "night mode = %d\n"
+	
+	if (is_oos())
+		ret = scnprintf(buf, PAGE_SIZE, "night mode = %d\n"
 											"0--night mode Off\n"
 											"1--night mode On\n",
 											night_mode);
+	else
+		ret = scnprintf(buf, PAGE_SIZE, "%d\n", night_mode);
+
 	return ret;
 }
 
@@ -541,10 +566,14 @@ static ssize_t oneplus_mode_show(struct device *dev,
 
 	oneplus_mode = dsi_display_get_oneplus_mode(connector);
 
-	ret = scnprintf(buf, PAGE_SIZE, "oneplus mode = %d\n"
+	is (is_oos())
+		ret = scnprintf(buf, PAGE_SIZE, "oneplus mode = %d\n"
 											"0--oneplus mode Off\n"
 											"1--oneplus mode On\n",
 											oneplus_mode);
+	else
+		ret = scnprintf(buf, PAGE_SIZE, "%d\n", oneplus_mode);
+
 	return ret;
 }
 
@@ -582,11 +611,15 @@ static ssize_t adaption_mode_show(struct device *dev,
 	int adaption_mode = 0;
 
 	adaption_mode = dsi_display_get_adaption_mode(connector);
-
-	ret = scnprintf(buf, PAGE_SIZE, "adaption mode = %d\n"
+	
+	if (is_oos())
+		ret = scnprintf(buf, PAGE_SIZE, "adaption mode = %d\n"
 											"0--adaption mode Off\n"
 											"1--adaption mode On\n",
 											adaption_mode);
+	else
+		ret = scnprintf(buf, PAGE_SIZE, "%d\n", adaption_mode);
+
 	return ret;
 }
 
